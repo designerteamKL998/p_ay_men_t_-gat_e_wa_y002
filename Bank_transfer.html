@@ -1,0 +1,639 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VADERPAY Payment Gateway</title>
+    <!-- Google Font: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="payment-gateway.css">
+</head>
+<body>
+
+    <!-- Demo Interactive Controller-->
+    <div class="demo-bar">
+        <div><strong>Checkout Flow Demo</strong> | Select Page State:</div>
+        <div class="tags">
+            <button class="demo-btn active" onclick="switchState(0)">State 0 (VADERPAY - Bank Selection)</button>
+            <button class="demo-btn" onclick="switchState(1)">State 1: Login</button>
+            <button class="demo-btn" onclick="switchState(2)">State 2: App Authorization</button>
+            <button class="demo-btn" onclick="switchState(3)">State 3: Bank Failure</button>
+            <button class="demo-btn" onclick="switchState(4)">State 4: Merchant Outcome</button>
+            <button class="demo-btn" onclick="switchState(5)">State 5: Success</button>
+        </div>
+    </div>
+
+    <div class="viewport-wrapper">
+        <div class="main-app-container" id="appMain">
+
+            <!-- Dynamic Header Component -->
+            <header class="secure-header" id="headerContainer"></header>
+
+            <!-- Main Body Container -->
+            <div class="content-body" id="contentBody">
+
+                <!-- Left Column: Trust Panel -->
+                <aside class="brand-panel" id="brandPanel">
+                    <div class="brand-content">
+                        <div class="brand-tag">
+                            <svg width="12" height="12" fill="currentColor" viewBox="0 0 20 20"><path d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" /></svg>
+                            Official Payment Gateway
+                        </div>
+
+                        <h1 class="brand-heading">Complete Your Payment Securely & Simply</h1>
+                        <p class="brand-subheading">Select your preferred bank to begin authentication and complete your online transaction safely.</p>
+
+                        <div class="features-list">
+                            <div class="feature-item">
+                                <div class="feature-icon-wrapper">
+                                    <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" /></svg>
+                                </div>
+                                <div class="feature-text">
+                                    <h4>Secure Authentication</h4>
+                                    <p>Every payment request requires direct authorization with your financial institution.</p>
+                                </div>
+                            </div>
+                            <div class="feature-item">
+                                <div class="feature-icon-wrapper">
+                                    <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" /></svg>
+                                </div>
+                                <div class="feature-text">
+                                    <h4>Real-Time Processing</h4>
+                                    <p>Instant status updates and push confirmation sent straight to your device.</p>
+                                </div>
+                            </div>
+                            <div class="feature-item">
+                                <div class="feature-icon-wrapper">
+                                    <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 012-2h2a2 2 0 012 2" /></svg>
+                                </div>
+                                <div class="feature-text">
+                                    <h4>End-to-End Traceability</h4>
+                                    <p>Unique transaction reference assigned for transparent status tracking.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Anti-Fraud Banner -->
+                    <div class="anti-fraud-card">
+                        <div class="anti-fraud-header">
+                            <svg width="18" height="18" fill="none" stroke="#F59E0B" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" /></svg>
+                            <span>Protect Your Account</span>
+                        </div>
+                        <p class="anti-fraud-desc">Never share your bank passwords, PINs, or TAC verification codes with anyone via phone, email, or SMS.</p>
+                    </div>
+                </aside>
+
+                <!-- Right Column: Interactive Work Area -->
+                <main class="task-panel" id="taskPanel"></main>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div class="toast-message" id="toast">
+        <svg width="16" height="16" fill="none" stroke="#10B981" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg>
+        <span id="toastText">Reference number copied</span>
+    </div>
+
+    <!-- JavaScript Execution -->
+    <script>
+        const txData = {
+            merchant: "998Bet Deposit",
+            amount: "MYR 0.00",
+            refNo: "BP15Q53UC9W0EI3",
+            timestamp: new Date().toISOString().replace('T', ' ').substring(0, 19),
+            accountTarget: "User Account (88****1290)"
+        };
+
+        const bankList = [
+            { id: 'pb', name: 'Public Bank', tag: 'PBe Gateway / SecureSign', color: '#D91A2A', initial: 'PBe', userField: 'User ID', logoUrl: '/assets/bank-Pb.svg' },
+            { id: 'mb', name: 'Maybank', tag: 'Maybank2u', color: '#FFC800', initial: 'M2U', userField: 'Username', logoUrl: '/assets/bank-maybank.svg' },
+            { id: 'cimb', name: 'CIMB Bank', tag: 'CIMB Clicks', color: '#ED1C24', initial: 'CIMB', userField: 'User ID', logoUrl: '/assets/bank-Cimb.svg' },
+            { id: 'affin', name: 'Affin Bank', tag: 'AffinAlways', color: '#005691', initial: 'Affin', userField: 'Username', logoUrl: '/assets/bank-affin.svg' },
+            { id: 'hlb', name: 'Hong Leong Bank', tag: 'HLB Connect', color: '#002D62', initial: 'HLB', userField: 'Username', logoUrl: '/assets/bank-Hlb.svg' },
+            { id: 'rhb', name: 'RHB Bank', tag: 'RHB Now', color: '#0067B1', initial: 'RHB', userField: 'Username', logoUrl: '/assets/bank-Rhb.svg' },
+            { id: 'alliance', name: 'Alliance Bank', tag: 'Alliance', color: '#0067B1', initial: 'Alliance', userField: 'Username', logoUrl: '/assets/bank-alliance.svg' },
+            { id: 'am', name: 'AM Bank', tag: 'AM Bank', color: '#0067B1', initial: 'AM', userField: 'Username', logoUrl: '/assets/bank-am.svg' },
+            { id: 'bsn', name: 'BSN Bank', tag: 'BSN Bank', color: '#0067B1', initial: 'BSN', userField: 'Username', logoUrl: '/assets/bank-bsn.svg' },
+            { id: 'islam', name: 'Bank Islam', tag: 'Bank Islam', color: '#0067B1', initial: 'islam', userField: 'Username', logoUrl: '/assets/bank-islam.svg' },
+            { id: 'ocbc', name: 'OCBC Bank', tag: 'OCBC Bank', color: '#0067B1', initial: 'ocbc', userField: 'Username', logoUrl: '/assets/bank-ocbc.svg' }
+        ];
+
+        let currentState = 0;
+        let selectedBank = bankList[0];
+        let timerInterval = null;
+
+        function handleImageError(imgElement, initial, color) {
+            const container = imgElement.parentElement;
+            container.innerHTML = `<div class="bank-logo-placeholder" style="background: ${color}; color: #FFF;">${initial}</div>`;
+        }
+
+        function handleHeaderImageError(imgElement, name) {
+            const container = imgElement.parentElement;
+            container.innerHTML = `<span class="logo-text">${name.toUpperCase()}</span>`;
+        }
+
+        function switchState(stateNum) {
+            currentState = stateNum;
+            clearInterval(timerInterval);
+
+            renderHeader(stateNum);
+
+            document.querySelectorAll('.demo-btn').forEach((btn, idx) => {
+                btn.classList.toggle('active', idx === stateNum);
+            });
+
+            const taskPanel = document.getElementById('taskPanel');
+            const brandPanel = document.getElementById('brandPanel');
+            if (brandPanel) brandPanel.style.display = 'flex';
+
+            switch (stateNum) {
+                case 0: renderState0(taskPanel); break;
+                case 1: renderState1(taskPanel); break;
+                case 2: renderState2(taskPanel); break;
+                case 3: renderState3(taskPanel); break;
+                case 4: renderState4(taskPanel); break;
+                case 5: renderState5(taskPanel); break;
+            }
+
+            requestAnimationFrame(() => {
+                window.scrollTo({ top: 0, behavior: 'auto' });
+                taskPanel.scrollTo({ top: 0, behavior: 'auto' });
+            });
+        }
+
+        function renderHeader(stateNum) {
+            const headerContainer = document.getElementById('headerContainer');
+            if (!headerContainer) return;
+
+            if (stateNum === 0) {
+                headerContainer.innerHTML = `
+                    <div class="brand-logo">
+                        <div class="logo-icon vader-icon"><img src="assets/vaderpay.png" alt="VADERPAY" /></div>
+                        <span class="logo-text">VADERPAY</span>
+                    </div>
+
+                    <div class="header-security-badge">
+                        <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" /></svg>
+                        <span>256-Bit SSL Encrypted Gateway</span>
+                    </div>
+
+                    <div class="header-actions">
+                        <button class="btn-text-action" aria-label="Cancel and Exit" onclick="window.location.href='index.html'">
+                            <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
+                        </button>
+                    </div>
+                `;
+            } else {
+                const currentBank = selectedBank || bankList[0];
+                const state1HorizontalLogos = {
+                    pb: 'assets/bank-horizontal/bank-horizontal-pb.svg',
+                    mb: 'assets/bank-horizontal/bank-horizontal-maybank.svg',
+                    alliance: 'assets/bank-horizontal/bank-horizontal-alliance.svg',
+                    rhb: 'assets/bank-horizontal/bank-horizontal-rhb.svg',
+                    am: 'assets/bank-horizontal/bank-horizontal-am-bank.svg',
+                    bsn: 'assets/bank-horizontal/bank-horizontal-bsn.svg',
+                    hlb: 'assets/bank-horizontal/bank-horizontal-hlb.svg',
+                    affin: 'assets/bank-horizontal/bank-horizontal-affin.svg',
+                    cimb: 'assets/bank-horizontal/bank-horizontal-cimb.svg',
+                    ocbc: 'assets/bank-horizontal/bank-horizontal-ocbc.svg',
+                    islam: 'assets/bank-horizontal/bank-horizontal-bank-islam.svg'
+                };
+
+                const headerLogoUrl = stateNum >= 1 && stateNum <= 5
+                    ? (state1HorizontalLogos[currentBank.id] || currentBank.logoUrl)
+                    : currentBank.logoUrl;
+
+                headerContainer.innerHTML = `
+                    <div class="brand-logo">
+                        <img src="${headerLogoUrl}" alt="${currentBank.name}" class="header-bank-logo" onerror="handleHeaderImageError(this, '${currentBank.name}')" />
+                    </div>
+                    <div class="header-security-badge">
+                        <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" /></svg>
+                        <span>256-Bit SSL Secure Payment</span>
+                    </div>
+                    <div class="header-actions">
+                        <button class="btn-text-action" aria-label="Cancel and Exit" onclick="window.location.href='index.html'">
+                            <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
+                        </button>
+                    </div>
+                `;
+            }
+        }
+
+        function showToast(msg) {
+            const toast = document.getElementById('toast');
+            if (!toast) return;
+            document.getElementById('toastText').innerText = msg;
+            toast.classList.add('show');
+            setTimeout(() => { toast.classList.remove('show'); }, 2500);
+        }
+
+        function copyRef() {
+            navigator.clipboard.writeText(txData.refNo);
+            showToast("Reference number copied: " + txData.refNo);
+        }
+
+        function toggleTxDetails() {
+            const content = document.getElementById('txDetailsContent');
+            const btn = document.getElementById('txDetailsBtn');
+            if (content) {
+                content.classList.toggle('show');
+                if (btn) btn.classList.toggle('active');
+            }
+        }
+
+        function toggleImportantNotes() {
+            const body = document.getElementById('importantNotesBody');
+            const trigger = document.getElementById('importantNotesTrigger');
+            if (body) {
+                body.classList.toggle('show');
+                if (trigger) trigger.classList.toggle('active');
+            }
+        }
+
+        function startTimer(durationSeconds, displayId, onExpire) {
+            clearInterval(timerInterval);
+            let timer = durationSeconds;
+            const display = document.getElementById(displayId);
+
+            timerInterval = setInterval(() => {
+                let minutes = parseInt(timer / 60, 10);
+                let seconds = parseInt(timer % 60, 10);
+
+                minutes = minutes < 10 ? "0" + minutes : minutes;
+                seconds = seconds < 10 ? "0" + seconds : seconds;
+
+                if (display) display.textContent = minutes + ":" + seconds;
+
+                if (--timer < 0) {
+                    clearInterval(timerInterval);
+                    if (display) display.textContent = "00:00";
+                    if (onExpire) onExpire();
+                }
+            }, 1000);
+        }
+
+        function getSummaryHTML() {
+            return `
+    <div class="tx-summary-card">
+      <div class="tx-row-main">
+        <span class="tx-merchant">${txData.merchant}</span>
+        <span class="tx-amount">${txData.amount}</span>
+      </div>
+      <div class="tx-meta-grid">
+        <div class="tx-meta-item">
+          <span>Transaction Ref</span>
+          <strong>${txData.refNo}</strong>
+          <button class="copy-ref-btn" onclick="copyRef()"><img src="assets/copy-icon.svg" /></button>
+        </div>
+        <div class="tx-meta-item">
+          <span>Created Time</span>
+          <strong>${txData.timestamp}</strong>
+        </div>
+      </div>
+      <button class="tx-collapsible-trigger" id="txDetailsBtn" onclick="toggleTxDetails()">
+        <span>Transaction Details</span>
+        <svg width="12" height="12" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+      </button>
+      <div class="tx-details-content" id="txDetailsContent">
+        <p>Recipient Account: ${txData.accountTarget}</p>
+        <p>Selected Channel: ${selectedBank ? selectedBank.name : 'Express Online Banking'}</p>
+        <p>Security Standard: 256-bit SSL Encrypted</p>
+      </div>
+    </div>
+  `;
+        }
+
+        function getImportantNotesHTML() {
+            return `
+    <div class="important-notes-card">
+      <button class="important-notes-trigger" id="importantNotesTrigger" onclick="toggleImportantNotes()">
+        <div class="important-notes-header-left">
+          <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+          <h3 class="important-notes-title">Important Notes</h3>
+        </div>
+        <svg class="important-notes-chevron" width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+      </button>
+
+      <div class="important-notes-body" id="importantNotesBody">
+        <ol class="important-notes-list">
+          <li>Kindly ensure your bank account has been activated for online payment processing.</li>
+          <li>Kindly ensure that you have sufficient funds in the account</li>
+          <li>Kindly ensure that you have entered the correct ID and password.</li>
+          <li>Please do not click on any submit button more than once.</li>
+          <li>Please do not refresh your browser.</li>
+          <li>Please take note of the reference number if any event you need to contact our Customer service for further action.</li>
+        </ol>
+      </div>
+    </div>
+  `;
+        }
+
+        function getStepperHTML(activeStep) {
+            return `
+            <div class="stepper">
+              <div class="step-item ${activeStep >= 1 ? (activeStep > 1 ? 'completed' : 'active') : ''}">
+                <div class="step-num">${activeStep > 1 ? '✓' : '1'}</div>
+                <span>Login</span>
+              </div>
+              <div class="stepper-line"></div>
+              <div class="step-item ${activeStep >= 2 ? (activeStep > 2 ? 'completed' : 'active') : ''}">
+                <div class="step-num">${activeStep > 2 ? '✓' : '2'}</div>
+                <span>Authorize</span>
+              </div>
+              <div class="stepper-line"></div>
+              <div class="step-item ${activeStep >= 3 ? 'active' : ''}">
+                <div class="step-num">3</div>
+                <span>Receipt</span>
+              </div>
+            </div>
+          `;
+        }
+
+        function renderState0(container) {
+            container.innerHTML = `
+    <div>
+      <span class="timer-badge" id="timerBadge">
+        <svg width="12" height="12" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+        This session will expire in <span id="timerClock">04:58</span>
+      </span>
+    </div>
+
+    <h2 style="font-size:22px; font-weight:700; color:var(--pb-navy); margin-bottom:4px;">Select Your Payment Bank</h2>
+    <p style="font-size:14px; color:var(--pb-slate-gray); margin-bottom:20px;">Choose a bank below to proceed to login & authentication.</p>
+
+    ${getSummaryHTML()}
+
+    <div style="margin-top: 24px;">
+      <h3 style="font-size:15px; font-weight:600; color:var(--pb-navy); margin-bottom:12px;">Supported Banks</h3>
+      <div class="bank-list-container" id="bankListContainer">
+        ${generateBankListHTML(bankList)}
+      </div>
+
+      <div style="margin-top: 24px;">
+        <button class="btn-primary" id="proceedBankBtn" ${!selectedBank ? 'disabled' : ''} onclick="handleProceedBank()">
+          <span>${selectedBank ? `Proceed to Login with ${selectedBank.name} &rarr;` : 'Please Select a Bank to Continue'}</span>
+        </button>
+      </div>
+    </div>
+
+    ${getImportantNotesHTML()}
+  `;
+
+            startTimer(298, 'timerClock');
+            if (selectedBank) selectBank(selectedBank.id);
+        }
+
+        function generateBankListHTML(list) {
+            return list.map(bank => {
+                const isSelected = selectedBank && selectedBank.id === bank.id;
+                return `
+      <div class="bank-card ${isSelected ? 'selected' : ''}" id="bank-card-${bank.id}" onclick="selectBank('${bank.id}')">
+        <div class="bank-logo-container">
+          <img src="${bank.logoUrl}" alt="${bank.name}" class="bank-logo-img" onerror="handleImageError(this, '${bank.initial}', '${bank.color}')" />
+        </div>
+        <div class="bank-info">
+          <div class="bank-name">${bank.name}</div>
+          <div class="bank-tag">${bank.tag}</div>
+        </div>
+        <div class="bank-radio ${isSelected ? 'checked' : ''}"></div>
+      </div>
+    `;
+            }).join('');
+        }
+
+        function selectBank(bankId) {
+            selectedBank = bankList.find(b => b.id === bankId);
+
+            document.querySelectorAll('.bank-card').forEach(card => card.classList.remove('selected'));
+            document.querySelectorAll('.bank-radio').forEach(radio => radio.classList.remove('checked'));
+
+            const selectedCard = document.getElementById(`bank-card-${bankId}`);
+            if (selectedCard) {
+                selectedCard.classList.add('selected');
+                const radio = selectedCard.querySelector('.bank-radio');
+                if (radio) radio.classList.add('checked');
+            }
+
+            const btn = document.getElementById('proceedBankBtn');
+            if (btn) {
+                btn.disabled = false;
+                btn.innerHTML = `<span>Proceed to Login with ${selectedBank.name}</span>`;
+            }
+        }
+
+        function handleProceedBank() {
+            if (!selectedBank) return;
+            switchState(1);
+        }
+
+        function renderState1(container) {
+            const currentBank = selectedBank || bankList[0];
+            const userFieldLabel = currentBank.userField || 'User ID';
+
+            container.innerHTML = `
+            <button class="nav-back-btn" onclick="switchState(0)">
+              <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
+              <span>Back to Select Bank</span>
+            </button>
+
+            ${getStepperHTML(1)}
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px;">
+              <div>
+                <h2 style="font-size:22px; font-weight:700; color:var(--pb-navy); margin-bottom:4px;">Welcome to ${currentBank.name}</h2>
+                <p style="font-size:14px; color:var(--pb-slate-gray);">Authenticate via ${currentBank.tag} to complete payment.</p>
+              </div>
+              <button class="btn-secondary" style="width: auto; height: 36px; padding: 0 12px; font-size: 12px;" onclick="switchState(0)">
+                Change Bank
+              </button>
+            </div>
+
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:0 0 18px;">
+              <div style="border:1px solid #dce4ee;border-radius:10px;padding:12px 14px;background:#f8fafc;">
+                <div style="font-size:11px;color:var(--pb-slate-gray);margin-bottom:5px;">SELECTED BANK</div>
+                <strong style="font-size:15px;color:var(--pb-navy);">${currentBank.name}</strong>
+              </div>
+              <div style="border:1px solid #dce4ee;border-radius:10px;padding:12px 14px;background:#f8fafc;">
+                <div style="font-size:11px;color:var(--pb-slate-gray);margin-bottom:5px;">DEPOSIT AMOUNT</div>
+                <strong style="font-size:15px;color:var(--pb-navy);">${txData.amount}</strong>
+              </div>
+            </div>
+
+            ${getSummaryHTML()}
+
+            <form onsubmit="event.preventDefault(); switchState(2);">
+              <div class="form-group">
+                <label class="form-label">${currentBank.name} ${userFieldLabel}</label>
+                <div class="input-wrapper">
+                  <input type="text" class="form-input" placeholder="Enter your ${userFieldLabel.toLowerCase()}" required>
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="form-label">Password</label>
+                <div class="input-wrapper">
+                  <input type="password" class="form-input" placeholder="Enter your password" required>
+                </div>
+              </div>
+
+              <div style="display: flex; gap: 12px; margin-top: 20px;">
+                <button type="submit" class="btn-primary" style="width: 100%;">
+                  <span>Next</span>
+                </button>
+              </div>
+            </form>
+
+            ${getImportantNotesHTML()}
+          `;
+        }
+
+        function renderState2(container) {
+            const currentBank = selectedBank || bankList[0];
+
+            container.innerHTML = `
+            ${getStepperHTML(2)}
+            <div class="auth-state-box">
+              <div class="auth-illustration" aria-hidden="true">
+                <span class="pulse-ring"></span>
+                <svg width="34" height="34" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <rect x="6.5" y="2.5" width="11" height="19" rx="2.5" stroke="currentColor" stroke-width="2"/>
+                  <circle cx="12" cy="18" r="1" fill="currentColor"/>
+                </svg>
+              </div>
+              <h2 style="font-size:20px; font-weight:700; color:var(--pb-navy); margin-bottom:6px;">App Authorization Required</h2>
+              <p style="font-size:14px; color:var(--pb-slate-gray);">A notification has been sent to your registered <strong>${currentBank.name}</strong> mobile app.</p>
+
+              <button class="btn-primary" onclick="switchState(5)"><span>I Have Approved on Mobile App</span></button>
+              <button class="btn-secondary" style="margin-top: 10px;" onclick="switchState(3)"><span>Simulate Approval Failure</span></button>
+            </div>
+          `;
+        }
+
+        function renderState3(container) {
+            container.innerHTML = `
+            ${getStepperHTML(3)}
+            <div class="result-status-card">
+              <div class="motion-error-wrapper" aria-hidden="true">
+                <span class="motion-error-ring"></span>
+                <span class="motion-particle p-square-red"></span>
+                <span class="motion-particle p-circle-orange"></span>
+                <span class="motion-particle p-triangle-yellow"></span>
+                <span class="motion-particle p-square-blue"></span>
+                <span class="motion-particle p-curved-line"></span>
+                <div class="motion-error-circle">
+                  <svg class="motion-error-cross" viewBox="0 0 48 48" fill="none">
+                    <path d="M14 14L34 34M34 14L14 34" stroke="currentColor" stroke-width="4" stroke-linecap="round"/>
+                  </svg>
+                </div>
+              </div>
+              <h2 class="result-title">Payment Unsuccessful</h2>
+              <p class="result-subtitle">Your transaction was declined or timed out during authorization.</p>
+              <div style="display:flex; gap:12px; margin-top:20px;">
+                <button class="btn-primary" onclick="switchState(0)"><span>Try Again</span></button>
+                <button class="btn-secondary" onclick="switchState(4)"><span>Return to Merchant</span></button>
+              </div>
+            </div>
+          `;
+        }
+
+        function renderState4(container) {
+            container.innerHTML = `
+            <div class="result-status-card">
+              <div class="motion-warning-wrapper" aria-hidden="true">
+                <span class="motion-warning-ring"></span>
+                <div class="motion-warning-circle">
+                  <svg class="motion-warning-icon" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M24 8L42 40H6L24 8Z" stroke="currentColor" stroke-width="3.5" stroke-linejoin="round"/>
+                    <path d="M24 18V28" stroke="currentColor" stroke-width="3.5" stroke-linecap="round"/>
+                    <circle cx="24" cy="34" r="1.8" fill="currentColor"/>
+                  </svg>
+                </div>
+              </div>
+              <h2 class="result-title">Returned to TopUp Online Merchant</h2>
+              <p class="result-subtitle">The order was not completed. Please choose an alternative payment method.</p>
+              <button class="btn-primary" onclick="window.location.href='index.html'"><span>Back to Select Bank</span></button>
+            </div>
+          `;
+        }
+
+        function renderState5(container) {
+            container.innerHTML = `
+            ${getStepperHTML(3)}
+            <div class="result-status-card">
+              <div class="success-container">
+                <div class="success-motion-wrapper" aria-hidden="true">
+                  <span class="ripple-ring"></span>
+                  <span class="ripple-ring"></span>
+                  <div class="confetti-container">
+                    <span class="confetti" style="--tw-x:-32px;--tw-y:-28px"></span>
+                    <span class="confetti" style="--tw-x:30px;--tw-y:-34px"></span>
+                    <span class="confetti" style="--tw-x:-38px;--tw-y:22px"></span>
+                    <span class="confetti" style="--tw-x:40px;--tw-y:26px"></span>
+                    <span class="confetti" style="--tw-x:4px;--tw-y:-42px"></span>
+                    <span class="confetti" style="--tw-x:2px;--tw-y:40px"></span>
+                  </div>
+                  <div class="success-circle">
+                    <svg class="checkmark-svg" viewBox="0 0 52 52" aria-hidden="true">
+                      <path d="M14 27l8 8 16-18"/>
+                    </svg>
+                  </div>
+                </div>
+              </div>
+              <h2 class="result-title">Payment Successful!</h2>
+              <p class="result-subtitle">Your transaction of <strong>${txData.amount}</strong> has been successfully processed.</p>
+              ${getSummaryHTML()}
+              <button class="btn-primary" onclick="window.location.href='index.html'"><span>Done & Return to Merchant</span></button>
+            </div>
+          `;
+        }
+
+        // Initialize from URL parameters
+        window.addEventListener('DOMContentLoaded', () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            let passedBank = urlParams.get('bank');
+            let passedAmount = urlParams.get('amount');
+
+            // Fallback for navigation where the query string is lost.
+            if (!passedBank || !passedAmount) {
+                try {
+                    const saved = JSON.parse(sessionStorage.getItem('bankTransferFlow') || 'null');
+                    if (saved) {
+                        passedBank = passedBank || saved.bank;
+                        passedAmount = passedAmount || saved.amount;
+                    }
+                } catch (e) {}
+            }
+
+            if (passedAmount && !isNaN(parseFloat(passedAmount))) {
+                txData.amount = `MYR ${parseFloat(passedAmount).toFixed(2)}`;
+            }
+
+            if (passedBank) {
+                const normalizedPassedBank = decodeURIComponent(String(passedBank)).trim().toLowerCase();
+                const bankAliases = {
+                    'public bank berhad': 'public bank'
+                };
+                const normalizedBankName = bankAliases[normalizedPassedBank] || normalizedPassedBank;
+
+                const foundBank = bankList.find(b => 
+                    b.name.toLowerCase() === normalizedBankName || 
+                    b.id.toLowerCase() === normalizedPassedBank
+                );
+                if (foundBank) {
+                    selectedBank = foundBank;
+                }
+            }
+
+            if (passedBank && passedAmount) {
+                switchState(1);
+            } else {
+                switchState(0);
+            }
+        });
+    </script>
+</body>
+</html>
