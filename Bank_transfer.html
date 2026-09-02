@@ -8,11 +8,36 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-
     <link rel="stylesheet" href="payment-gateway.css">
+    <style>
+        /* States 1–5: remove the left Trust Panel and expand the work area */
+
+
+        .main-app-container.compact-state {
+            width: 100%;
+            max-width: 900px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+
+        /* Remove Trust Panel layout */
+
+        .content-body.single-column-state {
+            display: block;
+            width: 100%;
+        }
+
+
+            /* Payment content */
+            .content-body.single-column-state .task-panel {
+                width: 100%;
+                max-width: 100%;
+                margin: 0;
+            }
+    </style>
 </head>
 <body>
-
     <!-- Demo Interactive Controller-->
     <div class="demo-bar">
         <div><strong>Checkout Flow Demo</strong> | Select Page State:</div>
@@ -25,16 +50,12 @@
             <button class="demo-btn" onclick="switchState(5)">State 5: Success</button>
         </div>
     </div>
-
     <div class="viewport-wrapper">
         <div class="main-app-container" id="appMain">
-
             <!-- Dynamic Header Component -->
             <header class="secure-header" id="headerContainer"></header>
-
             <!-- Main Body Container -->
             <div class="content-body" id="contentBody">
-
                 <!-- Left Column: Trust Panel -->
                 <aside class="brand-panel" id="brandPanel">
                     <div class="brand-content">
@@ -42,10 +63,8 @@
                             <svg width="12" height="12" fill="currentColor" viewBox="0 0 20 20"><path d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" /></svg>
                             Official Payment Gateway
                         </div>
-
                         <h1 class="brand-heading">Complete Your Payment Securely & Simply</h1>
                         <p class="brand-subheading">Select your preferred bank to begin authentication and complete your online transaction safely.</p>
-
                         <div class="features-list">
                             <div class="feature-item">
                                 <div class="feature-icon-wrapper">
@@ -76,7 +95,6 @@
                             </div>
                         </div>
                     </div>
-
                     <!-- Anti-Fraud Banner -->
                     <div class="anti-fraud-card">
                         <div class="anti-fraud-header">
@@ -86,19 +104,16 @@
                         <p class="anti-fraud-desc">Never share your bank passwords, PINs, or TAC verification codes with anyone via phone, email, or SMS.</p>
                     </div>
                 </aside>
-
                 <!-- Right Column: Interactive Work Area -->
                 <main class="task-panel" id="taskPanel"></main>
             </div>
         </div>
     </div>
-
     <!-- Toast Notification -->
     <div class="toast-message" id="toast">
         <svg width="16" height="16" fill="none" stroke="#10B981" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg>
         <span id="toastText">Reference number copied</span>
     </div>
-
     <!-- JavaScript Execution -->
     <script>
         const txData = {
@@ -110,17 +125,17 @@
         };
 
         const bankList = [
-            { id: 'pb', name: 'Public Bank', tag: 'PBe Gateway / SecureSign', color: '#D91A2A', initial: 'PBe', userField: 'User ID', logoUrl: '/assets/bank-Pb.svg' },
-            { id: 'mb', name: 'Maybank', tag: 'Maybank2u', color: '#FFC800', initial: 'M2U', userField: 'Username', logoUrl: '/assets/bank-maybank.svg' },
-            { id: 'cimb', name: 'CIMB Bank', tag: 'CIMB Clicks', color: '#ED1C24', initial: 'CIMB', userField: 'User ID', logoUrl: '/assets/bank-Cimb.svg' },
-            { id: 'affin', name: 'Affin Bank', tag: 'AffinAlways', color: '#005691', initial: 'Affin', userField: 'Username', logoUrl: '/assets/bank-affin.svg' },
-            { id: 'hlb', name: 'Hong Leong Bank', tag: 'HLB Connect', color: '#002D62', initial: 'HLB', userField: 'Username', logoUrl: '/assets/bank-Hlb.svg' },
-            { id: 'rhb', name: 'RHB Bank', tag: 'RHB Now', color: '#0067B1', initial: 'RHB', userField: 'Username', logoUrl: '/assets/bank-Rhb.svg' },
-            { id: 'alliance', name: 'Alliance Bank', tag: 'Alliance', color: '#0067B1', initial: 'Alliance', userField: 'Username', logoUrl: '/assets/bank-alliance.svg' },
-            { id: 'am', name: 'AM Bank', tag: 'AM Bank', color: '#0067B1', initial: 'AM', userField: 'Username', logoUrl: '/assets/bank-am.svg' },
-            { id: 'bsn', name: 'BSN Bank', tag: 'BSN Bank', color: '#0067B1', initial: 'BSN', userField: 'Username', logoUrl: '/assets/bank-bsn.svg' },
-            { id: 'islam', name: 'Bank Islam', tag: 'Bank Islam', color: '#0067B1', initial: 'islam', userField: 'Username', logoUrl: '/assets/bank-islam.svg' },
-            { id: 'ocbc', name: 'OCBC Bank', tag: 'OCBC Bank', color: '#0067B1', initial: 'ocbc', userField: 'Username', logoUrl: '/assets/bank-ocbc.svg' }
+            { id: 'pb', name: 'Public Bank', tag: 'PBe Gateway / SecureSign', color: '#D91A2A', initial: 'PBe', userField: 'User ID', logoUrl: 'assets/bank-Pb.svg' },
+            { id: 'mb', name: 'Maybank', tag: 'Maybank2u', color: '#FFC800', initial: 'M2U', userField: 'Username', logoUrl: 'assets/bank-maybank.svg' },
+            { id: 'cimb', name: 'CIMB Bank', tag: 'CIMB Clicks', color: '#ED1C24', initial: 'CIMB', userField: 'User ID', logoUrl: 'assets/bank-Cimb.svg' },
+            { id: 'affin', name: 'Affin Bank', tag: 'AffinAlways', color: '#005691', initial: 'Affin', userField: 'Username', logoUrl: 'assets/bank-affin.svg' },
+            { id: 'hlb', name: 'Hong Leong Bank', tag: 'HLB Connect', color: '#002D62', initial: 'HLB', userField: 'Username', logoUrl: 'assets/bank-Hlb.svg' },
+            { id: 'rhb', name: 'RHB Bank', tag: 'RHB Now', color: '#0067B1', initial: 'RHB', userField: 'Username', logoUrl: 'assets/bank-Rhb.svg' },
+            { id: 'alliance', name: 'Alliance Bank', tag: 'Alliance', color: '#0067B1', initial: 'Alliance', userField: 'Username', logoUrl: 'assets/bank-alliance.svg' },
+            { id: 'am', name: 'AM Bank', tag: 'AM Bank', color: '#0067B1', initial: 'AM', userField: 'Username', logoUrl: 'assets/bank-am.svg' },
+            { id: 'bsn', name: 'BSN Bank', tag: 'BSN Bank', color: '#0067B1', initial: 'BSN', userField: 'Username', logoUrl: 'assets/bank-bsn.svg' },
+            { id: 'islam', name: 'Bank Islam', tag: 'Bank Islam', color: '#0067B1', initial: 'islam', userField: 'Username', logoUrl: 'assets/bank-islam.svg' },
+            { id: 'ocbc', name: 'OCBC Bank', tag: 'OCBC Bank', color: '#0067B1', initial: 'ocbc', userField: 'Username', logoUrl: 'assets/bank-ocbc.svg' }
         ];
 
         let currentState = 0;
@@ -149,7 +164,39 @@
 
             const taskPanel = document.getElementById('taskPanel');
             const brandPanel = document.getElementById('brandPanel');
-            if (brandPanel) brandPanel.style.display = 'flex';
+            const contentBody = document.getElementById('contentBody');
+            const appMain = document.getElementById('appMain');
+
+            // State 0 keeps the Left Column: Trust Panel.
+            // States 1–5 hide it and let the task area use the full content width.
+            if (stateNum === 0) {
+
+                if (brandPanel) {
+                    brandPanel.style.display = 'flex';
+                }
+
+                if (contentBody) {
+                    contentBody.classList.remove('single-column-state');
+                }
+
+                if (appMain) {
+                    appMain.classList.remove('compact-state');
+                }
+
+            } else {
+
+                if (brandPanel) {
+                    brandPanel.style.display = 'none';
+                }
+
+                if (contentBody) {
+                    contentBody.classList.add('single-column-state');
+                }
+
+                if (appMain) {
+                    appMain.classList.add('compact-state');
+                }
+            }
 
             switch (stateNum) {
                 case 0: renderState0(taskPanel); break;
@@ -201,7 +248,7 @@
                     <div class="brand-logo">
                         <img src="${headerLogoUrl}" alt="${currentBank.name}" class="header-bank-logo" onerror="handleHeaderImageError(this, '${currentBank.name}')" />
                     </div>
-            
+
                 `;
             }
         }
@@ -361,7 +408,7 @@
       </div>
 
       <div style="margin-top: 24px;">
-        <button class="btn-primary" id="proceedBankBtn" ${!selectedBank ? 'disabled' : ''} onclick="handleProceedBank()">
+        <button class ="btn-primary" id="proceedBankBtn" ${!selectedBank ? 'disabled': ''} onclick="handleProceedBank()" style="width: 100%;">
           <span>${selectedBank ? `Proceed to Login with ${selectedBank.name} &rarr;` : 'Please Select a Bank to Continue'}</span>
         </button>
       </div>
@@ -432,31 +479,104 @@
               </div>
             </div>
 
-            <div style="border:1px solid #dce4ee;border-radius:16px;padding:16px 18px;background:#f8fafc;margin:0 0 18px;display:flex;align-items:center;gap:14px;">
-              <div style="width:52px;height:52px;border-radius:50%;background:#fff;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 12px rgba(15,23,42,.08);overflow:hidden;flex:0 0 52px;">
-                <img src="${currentBank.logoUrl}" alt="${currentBank.name}" style="max-width:34px;max-height:34px;object-fit:contain;">
+            <div style="border:1px solid #dce4ee;border-radius:16px;padding:16px 18px;background:#f8fafc;margin:0 0 18px;display:flex;align-items:center;justify-content:space-between;gap:14px;">
+              <div style="display:flex;align-items:center;gap:14px;">
+                <div style="width:52px;height:52px;border-radius:50%;background:#fff;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 12px rgba(15,23,42,.08);overflow:hidden;flex:0 0 52px;">
+                  <img src="${currentBank.logoUrl}" alt="${currentBank.name}" style="max-width:34px;max-height:34px;object-fit:contain;">
+                </div>
+                <div>
+                  <div style="font-size:12px;color:var(--pb-slate-gray);margin-bottom:4px;">Selected Bank</div>
+                  <strong style="font-size:18px;color:var(--pb-navy);">${currentBank.name}</strong>
+                </div>
               </div>
-              <div>
-                <div style="font-size:12px;color:var(--pb-slate-gray);margin-bottom:4px;">Selected Bank</div>
-                <strong style="font-size:18px;color:var(--pb-navy);">${currentBank.name}</strong>
+
+              <!-- Secure icon: automatically follows the selected bank color -->
+              <div style="width:62px;height:62px;display:flex;align-items:center;justify-content:center;color:${currentBank.color};opacity:.22;flex:0 0 62px;">
+                <svg width="58" height="58" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-label="Secure payment">
+                  <path d="M12 3L19 6V11.5C19 16.1 16 19.5 12 21C8 19.5 5 16.1 5 11.5V6L12 3Z"
+                        stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/>
+                  <path d="M8.7 12.2L10.8 14.3L15.5 9.6"
+                        stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
               </div>
             </div>
 
             ${getSummaryHTML()}
 
             <form onsubmit="event.preventDefault(); switchState(2);">
-              <div class="form-group">
-                <label class="form-label">${currentBank.name} ${userFieldLabel}</label>
-                <div class="input-wrapper">
-                  <input type="text" class="form-input" placeholder="Enter your ${userFieldLabel.toLowerCase()}" required>
-                </div>
-              </div>
-              <div class="form-group">
-                <label class="form-label">Password</label>
-                <div class="input-wrapper">
-                  <input type="password" class="form-input" placeholder="Enter your password" required>
-                </div>
-              </div>
+       <div class ="form-group">
+  <label class ="form-label">
+    ${currentBank.name} ${userFieldLabel}
+  </label>
+
+  <div class ="input-wrapper">
+
+    <span class ="input-icon">
+      <svg viewBox="0 0 24 24" fill="none">
+        <circle
+          cx="12"
+          cy="8"
+          r="4"
+          stroke="currentColor"
+          stroke-width="1.8"
+        />
+
+        <path
+          d="M4 21C4 17.5 7.5 15 12 15C16.5 15 20 17.5 20 21"
+          stroke="currentColor"
+          stroke-width="1.8"
+          stroke-linecap="round"
+        />
+      </svg>
+    </span>
+
+    <input
+      type="text"
+      class ="form-input"
+      placeholder="Enter your ${userFieldLabel.toLowerCase()}"
+      required
+    >
+
+  </div>
+</div>
+  <div class ="form-group">
+
+  <label class ="form-label">Password</label>
+
+  <div class ="input-wrapper">
+
+    <span class ="input-icon">
+      <svg viewBox="0 0 24 24" fill="none">
+
+        <rect
+          x="5"
+          y="10"
+          width="14"
+          height="10"
+          rx="2"
+          stroke="currentColor"
+          stroke-width="1.8"
+        />
+
+        <path
+          d="M8 10V7C8 4.8 9.8 3 12 3C14.2 3 16 4.8 16 7V10"
+          stroke="currentColor"
+          stroke-width="1.8"
+        />
+
+      </svg>
+    </span>
+
+    <input
+      type="password"
+      class ="form-input"
+      placeholder="Enter your password"
+      required
+    >
+
+  </div>
+
+</div>
 
               <div style="display: flex; gap: 12px; margin-top: 20px;">
                 <button type="submit" class="btn-primary" style="width: 100%;">
@@ -483,9 +603,9 @@
                 </svg>
               </div>
               <h2 style="font-size:20px; font-weight:700; color:var(--pb-navy); margin-bottom:6px;">App Authorization Required</h2>
-              <p style="font-size:14px; color:var(--pb-slate-gray);">A notification has been sent to your registered <strong>${currentBank.name}</strong> mobile app.</p>
+              <p style="font-size:14px; color:var(--pb-slate-gray);margin: 10px 0;">A notification has been sent to your registered <strong>${currentBank.name}</strong> mobile app.</p>
 
-              <button class="btn-primary" onclick="switchState(5)"><span>I Have Approved on Mobile App</span></button>
+              <button class ="btn-primary" onclick="switchState(5)"><span>I Have Approved on Mobile App</span></button>
               <button class="btn-secondary" style="margin-top: 10px;" onclick="switchState(3)"><span>Simulate Approval Failure</span></button>
             </div>
           `;
@@ -581,7 +701,7 @@
                         passedBank = passedBank || saved.bank;
                         passedAmount = passedAmount || saved.amount;
                     }
-                } catch (e) {}
+                } catch (e) { }
             }
 
             if (passedAmount && !isNaN(parseFloat(passedAmount))) {
@@ -595,8 +715,8 @@
                 };
                 const normalizedBankName = bankAliases[normalizedPassedBank] || normalizedPassedBank;
 
-                const foundBank = bankList.find(b => 
-                    b.name.toLowerCase() === normalizedBankName || 
+                const foundBank = bankList.find(b =>
+                    b.name.toLowerCase() === normalizedBankName ||
                     b.id.toLowerCase() === normalizedPassedBank
                 );
                 if (foundBank) {

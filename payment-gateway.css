@@ -114,11 +114,11 @@ body {
 }
 
 .secure-header {
-    height: 72px;
+    height: 100px;
     padding: 0 32px;
     display: flex;
     align-items: center;
-    justify-content: space-between;
+    justify-content: center;
     border-bottom: 1px solid var(--pb-border-gray);
     background: #FFFFFF;
 }
@@ -130,8 +130,8 @@ body {
 }
 
 .logo-icon img {
-    width: 36px;
-    height: 36px;
+    width: 50px;
+    height: 50px;
     border-radius: 8px;
     display: flex;
     align-items: center;
@@ -140,14 +140,14 @@ body {
 }
 
 .header-bank-logo {
-    height: 36px;
+    height: 60px;
     width: auto;
-    max-width: 160px;
+    max-width: 300px;
     object-fit: contain;
 }
 
 .logo-text {
-    font-size: 18px;
+    font-size: 22px;
     font-weight: 700;
     color: var(--pb-navy);
     letter-spacing: -0.3px;
@@ -348,49 +348,52 @@ body {
 
 /* Bank Selector List Styles */
 .bank-list-container {
-    max-height: 260px;
-    overflow-y: auto;
-    border: 1px solid var(--pb-border-gray);
-    border-radius: 12px;
-    padding: 8px;
-    background: #FAFAFA;
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 12px;
+    max-height: none;
+    overflow: visible;
+    border: none;
+    border-radius: 0;
+    padding: 0;
+    background: transparent;
 }
 
 .bank-card {
+    min-height: 110px;
     display: flex;
+    flex-direction: column;
     align-items: center;
-    padding: 12px 14px;
-    background: #FFFFFF;
-    border: 2px solid transparent;
-    border-radius: 10px;
+    justify-content: center;
+    gap: 12px;
+    padding: 14px 10px;
+    background: #f8fafc;
+    border: 1px solid var(--pb-border-gray);
+    border-radius: 12px;
     cursor: pointer;
     transition: all 0.2s ease;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+    box-shadow: none;
 }
 
     .bank-card:hover {
-        border-color: rgba(217, 26, 42, 0.4);
-        background: #FFF9F9;
+        border: 2px solid #d91a2a;
+        transform: translateY(-2px);
     }
 
     .bank-card.selected {
-        border-color: var(--pb-red);
-        background: #FFF5F5;
+        border: 2px solid #d91a2a;
     }
 
 .bank-logo-container {
-    width: 40px;
-    height: 40px;
-    border-radius: 8px;
+    width: 48px;
+    height: 48px;
+    margin: 0;
     display: flex;
     align-items: center;
     justify-content: center;
-    margin-right: 12px;
-    flex-shrink: 0;
     overflow: hidden;
+    border-radius: 0;
+    flex-shrink: 0;
 }
 
 .bank-logo-img {
@@ -414,19 +417,25 @@ body {
 }
 
 .bank-info {
-    flex: 1;
+    flex: none;
+    width: 100%;
+    text-align: center;
 }
 
 .bank-name {
     font-size: 14px;
-    font-weight: 600;
-    color: var(--pb-navy);
+    font-weight: 700;
+    color: #0f172a;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .bank-tag {
     font-size: 12px;
     color: var(--pb-slate-gray);
     margin-top: 2px;
+    display: none;
 }
 
 .bank-radio {
@@ -436,11 +445,12 @@ body {
     border-radius: 50%;
     position: relative;
     transition: all 0.2s ease;
+    display: none;
 }
 
     .bank-card.selected .bank-radio,
     .bank-radio.checked {
-        border-color: var(--pb-red);
+            border: 2px solid #000000;
     }
 
         .bank-card.selected .bank-radio::after,
@@ -550,7 +560,8 @@ body {
     border: 1px solid var(--pb-border-gray);
     border-radius: var(--radius-md);
     padding: 20px;
-    margin-bottom: 24px;
+    width: 100%;
+    margin: 15px auto;
 }
 
 .tx-row-main {
@@ -564,7 +575,7 @@ body {
     font-size: 14px;
     font-weight: 600;
     color: var(--pb-slate-gray);
-    width:40%;
+    width: 40%;
 }
 
 .tx-amount {
@@ -745,10 +756,31 @@ body {
 
 .input-icon {
     position: absolute;
-    left: 16px;
-    color: var(--pb-light-slate);
+    left: 18px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 22px;
+    height: 22px;
+    color: var(--pb-slate-gray);
     pointer-events: none;
+    z-index: 2;
 }
+
+/* Username & Password left icon */
+.input-wrapper {
+    position: relative;
+}
+
+    .input-wrapper .form-input {
+        padding-left: 52px;
+    }
+
+
+    .input-icon svg {
+        width: 100%;
+        height: 100%;
+        display: block;
+    }
 
 .form-input {
     width: 100%;
@@ -793,12 +825,12 @@ body {
 
 /* Buttons */
 .btn-primary {
-    width: 100%;
+    width: 50%;
     height: 48px;
     background: var(--pb-red);
     color: #FFFFFF;
     border: none;
-    border-radius: var(--radius-md);
+    border-radius: 40px;
     font-size: 16px;
     font-weight: 600;
     cursor: pointer;
@@ -808,6 +840,7 @@ body {
     gap: 8px;
     transition: opacity 0.2s, transform 0.1s;
     box-shadow: 0 2px 4px rgba(217, 26, 42, 0.2);
+    margin: 0 auto;
 }
 
     .btn-primary:hover:not(:disabled) {
@@ -826,12 +859,12 @@ body {
     }
 
 .btn-secondary {
-    width: 100%;
+    width: 50%;
     height: 48px;
     background: #FFFFFF;
     color: var(--pb-dark-blue);
     border: 1px solid var(--pb-border-gray);
-    border-radius: var(--radius-md);
+    border-radius: 40px;
     font-size: 15px;
     font-weight: 600;
     cursor: pointer;
@@ -840,6 +873,7 @@ body {
     justify-content: center;
     gap: 8px;
     transition: all 0.2s;
+    margin: 0 auto;
 }
 
     .btn-secondary:hover {
@@ -1697,10 +1731,10 @@ body:has(> .container) {
     background: repeating-linear-gradient(45deg, #000, #000 10px, #fff 10px, #fff 20px);
 }
 
-.qr-code img {
-    width: 200px;
-    height: 200px;
-}
+    .qr-code img {
+        width: 200px;
+        height: 200px;
+    }
 
 .qr-expired-overlay {
     display: none;
@@ -1819,7 +1853,7 @@ body:has(> .container) {
     border-bottom: 1px dashed var(--border-color);
 }
 
-.receipt-row:last-child {
+    .receipt-row:last-child {
         border-bottom: none;
     }
 
@@ -1843,13 +1877,13 @@ body:has(> .container) {
         padding: 10px 12px;
     }
 
-    .demo-bar .tags {
-        width: 100%;
-        overflow-x: auto;
-        padding-bottom: 2px;
-        scrollbar-width: thin;
-        -webkit-overflow-scrolling: touch;
-    }
+        .demo-bar .tags {
+            width: 100%;
+            overflow-x: auto;
+            padding-bottom: 2px;
+            scrollbar-width: thin;
+            -webkit-overflow-scrolling: touch;
+        }
 
     .demo-btn {
         flex: 0 0 auto;
@@ -1861,25 +1895,25 @@ body:has(> .container) {
         padding: 0;
     }
 
-    body:has(> .container) .container {
-        min-height: 100vh;
-        border-radius: 0;
-        border-left: 0;
-        border-right: 0;
-    }
+        body:has(> .container) .container {
+            min-height: 100vh;
+            border-radius: 0;
+            border-left: 0;
+            border-right: 0;
+        }
 
-    body:has(> .container) .header-bar {
-        padding: 12px 16px;
-        gap: 8px;
-    }
+        body:has(> .container) .header-bar {
+            padding: 12px 16px;
+            gap: 8px;
+        }
 
-    body:has(> .container) .security-tag {
-        display: none;
-    }
+        body:has(> .container) .security-tag {
+            display: none;
+        }
 
-    body:has(> .container) .page {
-        padding: 24px 16px;
-    }
+        body:has(> .container) .page {
+            padding: 24px 16px;
+        }
 
     .layout-two-col {
         grid-template-columns: 1fr;
@@ -1898,4 +1932,36 @@ body:has(> .container) {
         aspect-ratio: 1;
     }
 }
+
+/* States 1–5: remove the left Trust Panel and expand the work area */
+
+
+.main-app-container.compact-state {
+    width: 100%;
+    max-width: 900px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+
+/* Remove Trust Panel layout */
+
+.content-body.single-column-state {
+    display: block;
+    width: 100%;
+}
+
+
+    /* Payment content */
+    .content-body.single-column-state .task-panel {
+        width: 100%;
+        max-width: 100%;
+        margin: 0;
+    }
+
+
+.result-subtitle {
+    margin: 10px 0;
+}
+
 
