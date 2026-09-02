@@ -1939,6 +1939,14 @@ body:has(> .container) {
     .btn-secondary {
         width: 100%;
     }
+
+    .bank-list-container {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .bank-name {
+        font-size: 10px;
+    }
 }
 
 /* States 1–5: remove the left Trust Panel and expand the work area */
