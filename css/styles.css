@@ -1087,6 +1087,16 @@ button {
     .bank-grid {
         grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
     }
+
+    .primary-button {
+        color: #000;
+    }
+
+        .primary-button:not(:disabled):hover {
+            background: none;
+            color: none;
+            border: 0px solid var(--color-primary);
+        }
 }
 
 @media(max-width:400px){
