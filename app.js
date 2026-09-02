@@ -1,5 +1,5 @@
 const methods = {
-    online: { label: "Online Transfer", channels: ["vaderpay", "help2pay", "payessence", "vaderpayc2"] },
+    online: { label: "Online Transfer", channels: ["vaderpay","vaderpayc2","help2pay","payessence","bigpayz", "sklpay"] },
     qr: { label: "DuitNow QR", channels: ["vaderpayc1", "vaderpayc2", "eziepayqr"] },
     bank: { label: "Bank In Transfer", channels: ["banktransfer"] },
     wallet: {
@@ -48,7 +48,7 @@ const channels = {
         fee: "Free",
     },
     payessence: {
-        name: "Pay Essence",
+        name: "PAY ESSENCE",
         mark: "PE",
         logo: "assets/payEssence.svg",
         type: "Online Transfer",
@@ -59,7 +59,7 @@ const channels = {
         fee: "Free",
     },
     help2pay: {
-        name: "Help2Pay",
+        name: "HELP2Pay",
         mark: "H2",
         logo: "assets/helppay2.svg",
         type: "Online Transfer",
@@ -150,6 +150,17 @@ const channels = {
         max: 50000,
         fee: "Network fee",
     },
+    sklpay: {
+        name: "SKLPAY",
+        mark: "SKL",
+        logo: "",
+        type: "Online Transfer",
+        time: "",
+        min: 50,
+        max: 10000,
+        featured: true,
+        fee: "Free",
+    },
     paymentA: { name: "PaymentA", mark: "A", type: "E-Wallet", time: "Instant", min: 40, max: 500, fee: "Free" },
     paymentB: { name: "PaymentB", mark: "B", type: "E-Wallet", time: "Instant", min: 40, max: 500, fee: "Free" },
     paymentC: { name: "PaymentA", mark: "A", type: "E-Wallet", time: "Instant", min: 40, max: 500, fee: "Free" },
@@ -189,7 +200,7 @@ let ewalletChannelPage = 0;
 const EWALLET_CHANNELS_PER_PAGE = 4;
 let state = {
     method: "online",
-    channel: "vaderpay",
+    channel: "",
     channelSelected: false,
     extraChannel: "",
     filter: "all",
@@ -197,7 +208,7 @@ let state = {
     bank: "",
     package: "",
     cryptoNetwork: "",
-    walletPayment: "duitNow",
+    walletPayment: "",
 };
 const $ = (s) => document.querySelector(s);
 function money(n) {
@@ -329,11 +340,11 @@ function renderChannels() {
     $("#filterRow").classList.add("hidden");
     const list = methods[state.method].channels.filter((id) => {
         let c = channels[id];
+
         return (
-            !c.disabled &&
-            (state.filter === "all" ||
-                (state.filter === "low" && c.min <= 20) ||
-                (state.filter === "high" && c.max >= 10000))
+            state.filter === "all" ||
+            (state.filter === "low" && c.min <= 20) ||
+            (state.filter === "high" && c.max >= 10000)
         );
     });
     /* Same 3-column Payment Channel design for Online Transfer, DuitNow QR,
@@ -345,21 +356,28 @@ function renderChannels() {
     <div class="payment-channel-text-list">
         ${list.map(id => {
             const c = channels[id];
-
             return `
-                <button
-                    type="button"
-                    class="payment-channel-text-item ${state.channel === id ? "selected" : ""}"
-                    onclick="choosePaymentChannel('${id}')"
-                >
-                    ${c.name}
-                </button>
+            <button
+                type="button"   
+                    class="payment-channel-text-item
+                        ${state.channel === id ? "selected" : ""}
+                        ${c.disabled ? "disabled maintenance" : ""}"
+                        ${c.disabled ? "" : `onclick="choosePaymentChannel('${id}')"`}>
+                ${c.name}
+                ${c.disabled ? `
+                    <img
+                        src="assets/maintenance.svg"
+                        class="maintenance-icon"
+                        alt="Under Maintenance"
+                    >
+                <div class="maintenance-overlay"></div>
+                    ` : ""}
+            </button>
             `;
         }).join("")}
     </div>
 </div>
 `;
-
     const extraChannelSection = state.channel === "vaderpayc2" ? `
         <div id="vaderpayC2ExtraSelection" class="extra-channel-selection">
             <div class="extra-channel-title">
@@ -438,14 +456,15 @@ function renderChannels() {
 
         return;
     }
-        if (state.method === "online") {
-
+    if (
+   (state.method === "online" && (state.channel === "vaderpay" || state.channel === "vaderpayc2" || state.channel === "bigpayz" || state.channel === "sklpay"))
+) {
             const bankSection = `
-    <div id="onlineBankSelection" class="bank-selection">
+                    <div id="onlineBankSelection" class="bank-selection">
 
-        <label class="form-label">
-            Choose a Bank <span class="required">*</span>
-        </label>
+                    <label class="form-label">
+                        Choose a Bank <span class="required">*</span>
+            </label>
 
         <div class="bank-grid">
 
@@ -471,7 +490,8 @@ function renderChannels() {
             const bankArea = $("#bankArea");
             if (bankArea) bankArea.innerHTML = bankSection;
         }
-    if (
+        if (
+        (state.method === "online" && (state.channel === "payessence")) ||
         (state.method === "qr" && (state.channel === "vaderpayc1" || state.channel === "vaderpayc2")) ||
         (state.method === "wallet" && (state.channel === "vaderpayc1" || state.channel === "vaderpayc2" || state.channel === "eziepay"))
     ) {
@@ -483,8 +503,13 @@ function renderChannels() {
             ["touchNgo", "Touch ’n Go", "touchNgo"],
         ];
         const acceptsSection = `<div class="accepts-payment"><div class="accepts-payment-title">Accepts Payment From</div><div class="accepts-payment-icons">${paymentSources.map(([asset, name, key]) => `<button type="button"class="accepts-payment-item payment-source-option ${state.walletPayment === key ? "selected" : ""}"onclick="chooseWalletPayment('${key}')"><img src="assets/${asset}.svg"alt="${name}"></button>`).join("")}</div></div>`;
-        if (state.method === "qr" || state.method === "wallet") {
-
+        // Show Accepts Payment From above the Amount section on the right.
+        // This applies to Pay Essence, DuitNow QR and E-Wallet flows.
+        if (
+            state.method === "online" ||
+            state.method === "qr" ||
+            state.method === "wallet"
+        ) {
             const dynamicForm = $("#dynamicForm");
 
             if (dynamicForm) {
@@ -493,13 +518,6 @@ function renderChannels() {
                     acceptsSection
                 );
             }
-
-        } else {
-
-            $("#channelGrid").insertAdjacentHTML(
-                "afterend",
-                acceptsSection
-            );
         }
     }
 }
@@ -780,7 +798,7 @@ function setMethod(id) {
     if (id === "wallet") ewalletChannelPage = 0;
     if (id === "crypto") state.cryptoNetwork = "";
     let first = methods[id].channels.find((x) => !channels[x].disabled);
-    state.channel = first;
+    state.channel = "";
     state.amount = "";
     if (id !== "online") state.bank = "";
     state.walletPayment = "";
