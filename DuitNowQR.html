@@ -47,10 +47,9 @@
 
                         <div class="qr-actions">
                             <button class="btn-secondary" onclick="refreshQR()">Refresh QR</button>
-                            <button class="btn-secondary" onclick="alert('QR Code saved to gallery')">Save QR Code</button>
                         </div>
 
-                        <button class="btn-primary" id="mainSubmitBtn" onclick="submitPayment()">I Have Completed Payment</button>
+                        <button class="btn-primary" id="mainSubmitBtn" onclick="submitPayment()" style="width: 100%;margin-top: 10px;">I have Completed Payment</button>
 
                         <div class="polling-status">
                             <div class="spinner"></div>
@@ -206,7 +205,7 @@
             if (confirm("Refreshing will invalidate the previous QR code. Are you sure you want to generate a new one?")) {
                 qrWrapper.classList.remove('expired');
                 timeLeft = 300;
-                mainSubmitBtn.innerText = "I Have Completed Payment";
+                mainSubmitBtn.innerText = "I have Completed Payment";
                 mainSubmitBtn.onclick = submitPayment;
                 alert("QR Code has been refreshed");
             }
@@ -220,7 +219,7 @@
         // Function to handle merchant redirect action
         function redirectToMerchant() {
             alert("Redirecting to merchant site...");
-            window.location.href = "https://designerteamkl998.github.io/p_ay_men_t_-gat_e_wa_y/";
+            window.location.href = "https://github.com/designerteamKL998/p_ay_men_t_-gat_e_wa_y002/";
             return true;
         }
 
