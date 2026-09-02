@@ -1931,9 +1931,17 @@ body:has(> .container) {
         height: auto;
         aspect-ratio: 1;
     }
+
+    .btn-primary {
+        width: 100%;
+    }
+
+    .btn-secondary {
+        width: 100%;
+    }
 }
 
-/* States 1–5: remove the left Trust Panel and expand the work area */
+/* States 1â€“5: remove the left Trust Panel and expand the work area */
 
 
 .main-app-container.compact-state {
