@@ -668,7 +668,7 @@ button {
 }
 
 .bank-select:focus {
-    border-color: var(--blue);
+    border-color: var(--color-secondary);
     box-shadow: 0 0 0 3px rgba(35,116,225,.12);
 }
 
@@ -1634,7 +1634,41 @@ object-fit:contain;
     text-align:center;
     cursor:pointer;
     transition:.2s ease;
+    position:relative;
+    overflow:hidden;
 }
+
+/*payment channel under maintenance start*/
+.payment-channel-text-item.maintenance{
+    position:relative;
+    cursor:not-allowed;
+    opacity:0.65;
+}
+
+.maintenance-overlay{
+    position:absolute;
+    inset:0;
+    background:rgba(0,0,0,0.45);
+    z-index:1;
+    pointer-events:none;
+}
+
+.maintenance-icon{
+    position:absolute;
+    top:8px;
+    left:8px;
+    width:25px;
+    height:25px;
+    object-fit:contain;
+    z-index:3;
+}
+
+.payment-channel-text-item .channel-name{
+    position:relative;
+    z-index:2;
+}
+
+/*payment channel under maintenance end*/
 
 .payment-channel-text-item:hover{
      border-color:var(--color-primary,#ead87d);
