@@ -635,6 +635,7 @@ button {
     .primary-button:not(:disabled):hover {
         background: var(--color-secondary);
         color:var(--color-text);
+        border: 1px solid var(--color-primary);
     }
 
 .security-copy {
