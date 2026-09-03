@@ -423,19 +423,33 @@
 
         function generateBankListHTML(list) {
             return list.map(bank => {
-                const isSelected = selectedBank && selectedBank.id === bank.id;
+                const isSelected =
+                    selectedBank && selectedBank.id === bank.id;
+
                 return `
-      <div class="bank-card ${isSelected ? 'selected' : ''}" id="bank-card-${bank.id}" onclick="selectBank('${bank.id}')">
-        <div class="bank-logo-container">
-          <img src="${bank.logoUrl}" alt="${bank.name}" class="bank-logo-img" onerror="handleImageError(this, '${bank.initial}', '${bank.color}')" />
-        </div>
-        <div class="bank-info">
-          <div class="bank-name">${bank.name}</div>
-          <div class="bank-tag">${bank.tag}</div>
-        </div>
-        <div class="bank-radio ${isSelected ? 'checked' : ''}"></div>
-      </div>
-    `;
+            <div
+                class="bank-card ${isSelected ? 'selected' : ''}"
+                id="bank-card-${bank.id}"
+                onclick="selectBank('${bank.id}')"
+            >
+
+                <div class="bank-logo-container">
+                    <img
+                        src="${bank.logoUrl}"
+                        alt="${bank.name}"
+                        class="bank-logo-img"
+                        onerror="handleImageError(this, '${bank.initial}', '${bank.color}')"
+                    />
+                </div>
+
+                <div class="bank-info">
+                    <div class="bank-name">
+                        ${bank.name}
+                    </div>
+                </div>
+
+            </div>
+        `;
             }).join('');
         }
 
@@ -680,9 +694,14 @@
                   </div>
                 </div>
               </div>
-              <h2 class="result-title">Payment Successful!</h2>
+                <h2 class ="page-title">Your Payment was successful</h2>
+                <p class ="page-subtitle" style="max-width: 480px; margin: 8px auto 0;">We have received your payment request and are verifying it with the payment channel.Please do not submit duplicate payments.</p>
+
+                <div style="color: var(--warning-amber); font-size: 13px; margin-top: 8px;">
+                    Confirmation usually takes a few minutes, up to 10 minutes maximum.
+                </div>
               ${getSummaryHTML()}
-              <button class="btn-primary" onclick="window.location.href='index.html'"><span>Done & Return to Merchant</span></button>
+              <button class ="btn-primary" onclick="window.location.href='index.html'"><span>Redirect to merchant</span></button>
             </div>
           `;
         }
