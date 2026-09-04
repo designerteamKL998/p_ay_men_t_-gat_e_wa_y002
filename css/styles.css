@@ -43,6 +43,7 @@ body {
 
 button, input, select {
     font: inherit;
+    color: #fff;
 }
 
 button {
@@ -544,25 +545,26 @@ button {
     position: absolute;
     top: 15px;
     left: 14px;
-    color: #53657d;
+    color: #fff;
     font-weight: 800;
 }
 
 .amount-wrap input {
     width: 100%;
     height: 52px;
-    border: 1px solid #cfd9e6;
     border-radius: 9px;
     padding: 0 16px 0 57px;
     font-size: 18px;
     font-weight: 700;
-    color: var(--ink);
     outline: 0;
-    color: var(--color-on-primary);
+    border: 1px solid #3a4352;
+    border-radius: 10px;
+    background: #252932;
+}
 }
 
     .amount-wrap input:focus, .form-control:focus {
-        border-color: var(--blue);
+        border-color: var(--color-primary);
         box-shadow: 0 0 0 3px rgba(35,116,225,.12);
     }
 
@@ -1540,11 +1542,12 @@ object-fit:contain;
 .deposit-bonus-selection{
     width:100%;
     margin-bottom:28px;
+    margin-top:28px;
 }
 
 .deposit-bonus-title{
     margin-bottom:14px;
-    font-size:15px;
+    font-size:14px;
     font-weight:700;
     color:var(--color-text,#fff);
 }
@@ -1568,7 +1571,7 @@ object-fit:contain;
     text-align: left;
     cursor: pointer;
     transition: .2s ease;
-    min-height: 75px;
+    min-height: 62px;
 }
 
 .deposit-bonus-card:hover{
@@ -1700,7 +1703,7 @@ object-fit:contain;
 
 .bank-selection{
     width:100%;
-    margin-top:18px;
+    margin-top:32px;
 }
 
 .bank-grid{
@@ -1857,4 +1860,51 @@ object-fit:contain;
     border-color:var(--color-primary);
     color:var(--color-primary);
     box-shadow:0 0 0 1px var(--color-primary) inset;
+}
+
+
+/* =========================================
+   MOBILE ONLY: Deposit Method - compact 3-column layout
+   Second row stays aligned to the left
+   ========================================= */
+@media (max-width: 620px) {
+    #categoryTabs.category-tabs {
+        display: grid !important;
+        grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+        justify-content: start !important;
+        align-items: stretch;
+        gap: 8px;
+        width: 100%;
+        margin: 0 0 20px !important;
+        margin-right: 0 !important;
+        padding: 0;
+    }
+
+    #categoryTabs .category-tab {
+        width: auto !important;
+        min-width: 0;
+        min-height: 78px;
+        padding: 7px 4px;
+        gap: 6px;
+        border-radius: 9px;
+    }
+
+    #categoryTabs .category-tab-icon {
+        width: 30px;
+        height: 30px;
+    }
+
+    #categoryTabs .category-tab span:not(.category-selected),
+    #categoryTabs .category-tab-name {
+        font-size: 10px !important;
+        line-height: 1.2;
+        white-space: nowrap;
+    }
+}
+
+/* Keep 3 columns even on very small mobile screens */
+@media (max-width: 400px) {
+    #categoryTabs.category-tabs {
+        grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+    }
 }
