@@ -220,6 +220,7 @@ let state = {
     channel: "",
     channelSelected: false,
     extraChannel: "",
+    senderAccountName: "",
     filter: "all",
     amount: "",
     bank: "",
@@ -420,11 +421,17 @@ function renderChannels() {
     // VADERPAY (C1) → FPX / DuitNow
     // EeziePay → Boost / GrabPay / Touch N Go / Shopee Pay
     const walletChannelOptions =
-        state.method === "wallet" && state.channel === "vaderpayc1"
-            ? ["FPX", "DuitNow"]
-            : state.method === "wallet" && state.channel === "eziepay"
-                ? ["Boost", "GrabPay", "Touch N Go", "Shopee Pay"]
-                : [];
+        (
+            (state.method === "online" && state.channel === "vaderpayc2") ||
+            (state.method === "qr" && state.channel === "vaderpayc2") ||
+            (state.method === "crypto" && state.channel === "usdt")
+        )
+            ? ["Channel 1", "Channel 2", "Channel 3"]
+            : state.method === "wallet" && state.channel === "vaderpayc1"
+                ? ["FPX", "DuitNow"]
+                : state.method === "wallet" && state.channel === "eziepay"
+                    ? ["Boost", "GrabPay", "Touch N Go", "Shopee Pay"]
+                    : [];
 
     const extraChannelSection = walletChannelOptions.length ? `
         <div id="walletExtraSelection" class="extra-channel-selection">
@@ -451,12 +458,43 @@ function renderChannels() {
 
         const bankArea = $("#bankArea");
 
-        // TERRACOIN: show the QR code directly and do not show crypto network choices.
+        // TERRACOIN: custom QR payment design only for Crypto -> TERRACOIN.
         if (state.channel === "terracoin") {
             const terracoinQrSection = `
                 <div id="terracoinQrSection" class="terracoin-qr-section">
-                    <div class="terracoin-qr-card">
-                        <img src="assets/QRcode.jpg" alt="TERRACOIN QR Code" class="terracoin-qr-image">
+                    <div class="terracoin-payment-row">
+                        <div class="terracoin-qr-card">
+                            <img src="assets/QRcode.jpg" alt="TERRACOIN QR Code" class="terracoin-qr-image">
+                        </div>
+
+                        <div class="terracoin-payment-details">
+                            <div class="fixed-account-field terracoin-to-field">
+                                <span>To</span>
+                                <div class="account-value-box terracoin-to-box">
+                                    <input
+                                        id="terracoinAccountName"
+                                        class="terracoin-account-input"
+                                        type="text"
+                                        placeholder="Enter account name"
+                                        autocomplete="off"
+                                    >
+                                    <button
+                                        type="button"
+                                        class="copy-icon"
+                                        title="Copy"
+                                        aria-label="Copy"
+                                        onclick="copyText(document.getElementById('terracoinAccountName').value)"
+                                    >
+                                        <img src="assets/copy-icon.svg" alt="">
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div class="terracoin-rate-row">
+                                <span>Current exchange rate</span>
+                                <b>TRC 1: MYR 2</b>
+                            </div>
+                        </div>
                     </div>
                 </div>
             `;
@@ -602,7 +640,10 @@ function choosePaymentChannel(id){
     state.channel=id;
     state.channelSelected=true;
     state.extraChannel =
-        state.method === "wallet" && (id === "vaderpayc1" || id === "eziepay")
+        (state.method === "online" && id === "vaderpayc2") ||
+        (state.method === "qr" && id === "vaderpayc2") ||
+        (state.method === "crypto" && id === "usdt") ||
+        (state.method === "wallet" && (id === "vaderpayc1" || id === "eziepay"))
             ? state.extraChannel
             : "";
     state.amount="";
@@ -710,35 +751,49 @@ function chooseOnlineBank(bank) {
     validate();
 }
 function bankAccountDetails() {
-    const receivingBank = state.bank || "Please select a bank";
+    const receivingBank = state.bank || "Alliance";
 
     return `<div class="bank-card">
         <h3>Pay To</h3>
 
         <div class="fixed-account-field">
-            <span>Bank</span>
+            <span>From</span>
+            <input
+                class="account-value-box account-value-input"
+                type="text"
+                value="${state.senderAccountName || ""}"
+                placeholder="Enter account name"
+                oninput="state.senderAccountName=this.value"
+                autocomplete="off"
+            >
+        </div>
+
+        <div class="fixed-account-field">
+            <span>To</span>
             <div class="account-value-box">
                 <b>${receivingBank}</b>
             </div>
         </div>
 
-        ${[
-            ["Account Name", bankAccount.name],
-            ["Account Number", bankAccount.number],
-        ]
-            .map(
-                (x) =>
-                    `<div class="fixed-account-field">
-                        <span>${x[0]}</span>
-                        <div class="account-value-box">
-                            <b>${x[1]}</b>
-                            <button class="copy-icon" title="Copy ${x[0]}" aria-label="Copy ${x[0]}" onclick="copyText('${x[1]}')">
-                                <img src="assets/copy-icon.svg" alt="">
-                            </button>
-                        </div>
-                    </div>`
-            )
-            .join("")}
+        <div class="fixed-account-field">
+            <span>Account Name</span>
+            <div class="account-value-box">
+                <b>${bankAccount.name}</b>
+                <button class="copy-icon" title="Copy Account Name" aria-label="Copy Account Name" onclick="copyText('${bankAccount.name}')">
+                    <img src="assets/copy-icon.svg" alt="">
+                </button>
+            </div>
+        </div>
+
+        <div class="fixed-account-field">
+            <span>Account Number</span>
+            <div class="account-value-box">
+                <b>${bankAccount.number}</b>
+                <button class="copy-icon" title="Copy Account Number" aria-label="Copy Account Number" onclick="copyText('${bankAccount.number}')">
+                    <img src="assets/copy-icon.svg" alt="">
+                </button>
+            </div>
+        </div>
     </div>`;
 }
 function setCryptoNetwork(network) {
@@ -844,8 +899,7 @@ function renderForm() {
     let c = channels[state.channel],
         specific = "";
     if (state.channel === "banktransfer")
-        specific = `${amountBlock(c)}<div class="form-row">
-       <div>${field("Sender account name", `<input class="form-control"placeholder="Enter sender account name">`)}</div></div>${field("Transfer receipt (optional)", `<div class="upload-box"><div class="upload-info"><span>A receipt may help us process your request faster.</span><small>JPG, PNG, or PDF · Maximum 10MB</small></div><label>Select file<input type="file"onchange="showToast('Transfer receipt selected')"></label></div>`)}`;
+        specific = `${amountBlock(c)}${field("Transfer receipt (optional)", `<div class="upload-box"><div class="upload-info"><span>A receipt may help us process your request faster.</span><small>JPG, PNG, or PDF · Maximum 10MB</small></div><label>Select file<input type="file"onchange="showToast('Transfer receipt selected')"></label></div>`)}`;
    
     else {
         let warning =
@@ -871,7 +925,7 @@ document.head.appendChild(paymentFormAlignmentStyle);
 
 const terracoinQrStyle = document.createElement("style");
 terracoinQrStyle.textContent =
-    ".terracoin-qr-section{width:100%;box-sizing:border-box;padding:24px;display:flex;justify-content:center;align-items:center}.terracoin-qr-card{display:flex;justify-content:center;align-items:center}.terracoin-qr-image{width:min(180px,100%);height:auto;display:block;background:#fff;padding:8px;box-sizing:border-box}";
+    ".terracoin-qr-section{width:100%;box-sizing:border-box;padding:18px 24px}.terracoin-payment-row{display:flex;align-items:center;gap:24px;width:100%}.terracoin-qr-card{display:flex;justify-content:center;align-items:center;flex:0 0 auto}.terracoin-qr-image{width:120px;height:120px;object-fit:contain;display:block;background:#fff;padding:6px;box-sizing:border-box}.terracoin-payment-details{flex:1;min-width:0}.terracoin-to-field{margin:0}.terracoin-to-box{display:flex!important;align-items:center;gap:8px;padding-right:10px}.terracoin-account-input{flex:1;min-width:0;border:1px solid #3a4352;border-radius:10px;background:#252932;color:#fff;font:inherit;font-weight:700;padding:12px 14px;box-sizing:border-box;outline:none}.terracoin-account-input::placeholder{color:#fff;font-weight:400;opacity:.7}.terracoin-rate-row{margin-top:12px;display:flex;align-items:center;gap:10px;color:#c5ccd6;font-size:13px}.terracoin-rate-row b{display:inline-block;color:#fff;padding:8px 12px;font-size:13px}@media(max-width:700px){.terracoin-qr-section{padding:16px}.terracoin-payment-row{gap:16px}.terracoin-qr-image{width:92px;height:92px}.terracoin-rate-row{flex-wrap:wrap}}";
 document.head.appendChild(terracoinQrStyle);
 
 const packageAmountStyle = document.createElement("style");
@@ -883,6 +937,12 @@ const promoCodeStyle = document.createElement("style");
 promoCodeStyle.textContent =
     ".promo-code-wrap{width:100%;margin-bottom:18px}.promo-code-input{width:100%;height:48px;padding:0 16px;border:1px solid #3a4352;border-radius:10px;background:#252932;color:#75756c;font:inherit;font-size:12px;box-sizing:border-box;outline:none}.promo-code-input::placeholder{color:#b7bec9}.promo-code-input:focus{border-color:var(--color-primary);box-shadow:0 0 0 2px rgba(255,214,75,.12)}";
 document.head.appendChild(promoCodeStyle);
+
+
+const payToFromStyle = document.createElement("style");
+payToFromStyle.textContent =
+    ".account-value-input{font:inherit;color:#fff;font-weight:700;outline:none;width:100%;box-sizing:border-box;min-height:44px;padding:0 14px;border:1px solid #3a4352;border-radius:10px;background:#252932;box-shadow:none}.account-value-input::placeholder{color:#7b8794;font-weight:400;opacity:1}";
+document.head.appendChild(payToFromStyle);
 
 const securityCopyStyle = document.createElement("style");
 securityCopyStyle.textContent =
@@ -947,12 +1007,18 @@ function validateDepositRequirements() {
     // Online Transfer: Package + Payment Channel + Choose Bank + Amount
     if (state.method === "online") {
         if (!state.channelSelected || !state.channel) errors.push("Please select a payment channel.");
+        if (state.channel === "vaderpayc2" && !state.extraChannel) {
+            errors.push("Please choose a channel.");
+        }
         if (!state.bank) errors.push("Please choose a bank.");
     }
 
     // DuitNow QR: Package + Payment Channel + Amount
     if (state.method === "qr") {
         if (!state.channelSelected || !state.channel) errors.push("Please select a payment channel.");
+        if (state.channel === "vaderpayc2" && !state.extraChannel) {
+            errors.push("Please choose a channel.");
+        }
     }
 
     // Bank In Transfer: Package + Receiving Bank + Amount
@@ -969,6 +1035,9 @@ function validateDepositRequirements() {
     // Only VADERPAY (C2) requires a crypto network selection.
     if (state.method === "crypto") {
         if (!state.channelSelected || !state.channel) errors.push("Please select a payment channel.");
+        if (state.channel === "usdt" && !state.extraChannel) {
+            errors.push("Please choose a channel.");
+        }
         if (state.channel === "usdt" && !state.cryptoNetwork) {
             errors.push("Please choose a crypto network.");
         }
