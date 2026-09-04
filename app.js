@@ -1,5 +1,5 @@
 const methods = {
-    online: { label: "Online Transfer", channels: ["vaderpay","vaderpayc2","help2pay","payessence","bigpayz", "sklpay"] },
+    online: { label: "Online Transfer", channels: ["vaderpay","vaderpayc2","payessence","bigpayz", "sklpay"] },
     qr: { label: "DuitNow QR", channels: ["vaderpayc1", "vaderpayc2", "eziepayqr"] },
     bank: { label: "Bank In Transfer", channels: ["banktransfer"] },
     wallet: {
@@ -13,7 +13,7 @@ const methods = {
             "eziepay"
         ],
     },
-    crypto: { label: "Crypto", channels: ["usdt"] },
+    crypto: { label: "Crypto", channels: ["usdt", "terracoin"] },
 };
 const channels = {
     vaderpay: {
@@ -141,9 +141,18 @@ const channels = {
         fee: "Free",
     },
     usdt: {
-        name: "VaderPay (C2)",
+        name: "VADERPAY (C2)",
         mark: "VP",
         logo: "assets/vaderpay.png",
+        type: "Crypto",
+        time: "After on-chain confirmation",
+        min: 5,
+        max: 50000,
+        fee: "Network fee",
+    },
+    terracoin: {
+        name: "TERRACOIN",
+        mark: "TC",
         type: "Crypto",
         time: "After on-chain confirmation",
         min: 5,
@@ -191,6 +200,14 @@ const depositPackages = [
     "10% Unlimited Slot Reload Bonus (MYR)",
     "10% Daily Deposit Bonus-Lottery Only",
 ];
+
+const packageAmounts = {
+    "No Bonus": "",
+    "2% Unlimited Reload Bonus (Free Spin)": "MYR 50",
+    "Unlimited Casino Bonus 15% (MYR)": "MYR 100",
+    "10% Unlimited Slot Reload Bonus (MYR)": "MYR 50",
+    "10% Daily Deposit Bonus-Lottery Only": "MYR 30",
+};
 const bankTransferOptions = [
     "Maybank",
     "Alliance"
@@ -209,6 +226,7 @@ let state = {
     package: "",
     cryptoNetwork: "",
     walletPayment: "",
+    promoCode: "",
 };
 const $ = (s) => document.querySelector(s);
 function money(n) {
@@ -261,6 +279,16 @@ function renderTabs() {
         .join("");
 }
 
+function movePackageBelowPaymentChannel() {
+    const packageArea = $("#packageArea");
+    const channelGrid = $("#channelGrid");
+
+    if (!packageArea || !channelGrid) return;
+
+    // Move the Package section directly below the Payment Channel / Channel Grid.
+    channelGrid.insertAdjacentElement("afterend", packageArea);
+}
+
 function renderChannels() {
     document
         .querySelectorAll(
@@ -290,16 +318,15 @@ function renderChannels() {
                 if(p==="No Bonus"){
                     title="No Bonus";
                 }
+                const amount = packageAmounts[p] || "";
+
                 return `
                 <button
                     type="button"
                     class="deposit-bonus-card ${selected?"selected":""}"
                     onclick="chooseDepositPackage('${p}')"
                 >
-                    <span class="deposit-bonus-radio"></span>
-
                     <span class="deposit-bonus-content">
-
                         <span class="deposit-bonus-name">
                             ${title}
                         </span>
@@ -310,8 +337,14 @@ function renderChannels() {
                                 ${subtitle}
                             </span>`
                             :""
-                }
+                        }
                     </span>
+
+                    ${
+                        amount
+                        ?`<span class="deposit-bonus-amount">${amount}</span>`
+                        :""
+                    }
                 </button>
                 `;
             }).join("")}
@@ -320,6 +353,11 @@ function renderChannels() {
        
     const packageArea = $("#packageArea");
     if (packageArea) packageArea.innerHTML = packageSection;
+
+    // Apply the same order to all payment methods:
+    // Payment Channel / Receiving Bank first, Package second.
+    movePackageBelowPaymentChannel();
+
     if(state.method==="bank"){
         $("#channelTitle").textContent="Choose a receiving bank";
         $("#channelSubtitle").textContent="";
@@ -378,13 +416,23 @@ function renderChannels() {
     </div>
 </div>
 `;
-    const extraChannelSection = state.channel === "vaderpayc2" ? `
-        <div id="vaderpayC2ExtraSelection" class="extra-channel-selection">
+    // E-Wallet channel choices:
+    // VADERPAY (C1) → FPX / DuitNow
+    // EeziePay → Boost / GrabPay / Touch N Go / Shopee Pay
+    const walletChannelOptions =
+        state.method === "wallet" && state.channel === "vaderpayc1"
+            ? ["FPX", "DuitNow"]
+            : state.method === "wallet" && state.channel === "eziepay"
+                ? ["Boost", "GrabPay", "Touch N Go", "Shopee Pay"]
+                : [];
+
+    const extraChannelSection = walletChannelOptions.length ? `
+        <div id="walletExtraSelection" class="extra-channel-selection">
             <div class="extra-channel-title">
                 Choose Channel <span class="required">*</span>
             </div>
             <div class="extra-channel-grid">
-                ${["Channel 1", "Channel 2", "Channel 3"].map(channel => `
+                ${walletChannelOptions.map(channel => `
                     <button
                         type="button"
                         class="extra-channel-item ${state.extraChannel === channel ? "selected" : ""}"
@@ -401,6 +449,23 @@ function renderChannels() {
 
     if (state.method === "crypto") {
 
+        const bankArea = $("#bankArea");
+
+        // TERRACOIN: show the QR code directly and do not show crypto network choices.
+        if (state.channel === "terracoin") {
+            const terracoinQrSection = `
+                <div id="terracoinQrSection" class="terracoin-qr-section">
+                    <div class="terracoin-qr-card">
+                        <img src="assets/QRcode.jpg" alt="TERRACOIN QR Code" class="terracoin-qr-image">
+                    </div>
+                </div>
+            `;
+
+            if (bankArea) bankArea.innerHTML = terracoinQrSection;
+            return;
+        }
+
+        // VADERPAY (C2): keep the existing crypto network selection.
         const cryptoNetworks = [
             {
                 id: "TRC20-USDT",
@@ -451,7 +516,6 @@ function renderChannels() {
         </div>
     `;
 
-        const bankArea = $("#bankArea");
         if (bankArea) bankArea.innerHTML = networkSection;
 
         return;
@@ -490,36 +554,6 @@ function renderChannels() {
             const bankArea = $("#bankArea");
             if (bankArea) bankArea.innerHTML = bankSection;
         }
-        if (
-        (state.method === "online" && (state.channel === "payessence")) ||
-        (state.method === "qr" && (state.channel === "vaderpayc1" || state.channel === "vaderpayc2")) ||
-        (state.method === "wallet" && (state.channel === "vaderpayc1" || state.channel === "vaderpayc2" || state.channel === "eziepay"))
-    ) {
-        const paymentSources = [
-            ["duitNow", "DuitNow", "duitNow"],
-            ["boost", "Boost", "boost"],
-            ["grabpay", "GrabPay", "grabpay"],
-            ["shopee", "ShopeePay", "shopee"],
-            ["touchNgo", "Touch ’n Go", "touchNgo"],
-        ];
-        const acceptsSection = `<div class="accepts-payment"><div class="accepts-payment-title">Accepts Payment From</div><div class="accepts-payment-icons">${paymentSources.map(([asset, name, key]) => `<button type="button"class="accepts-payment-item payment-source-option ${state.walletPayment === key ? "selected" : ""}"onclick="chooseWalletPayment('${key}')"><img src="assets/${asset}.svg"alt="${name}"></button>`).join("")}</div></div>`;
-        // Show Accepts Payment From above the Amount section on the right.
-        // This applies to Pay Essence, DuitNow QR and E-Wallet flows.
-        if (
-            state.method === "online" ||
-            state.method === "qr" ||
-            state.method === "wallet"
-        ) {
-            const dynamicForm = $("#dynamicForm");
-
-            if (dynamicForm) {
-                dynamicForm.insertAdjacentHTML(
-                    "beforebegin",
-                    acceptsSection
-                );
-            }
-        }
-    }
 }
 function getWalletPaymentIcon(key) {
     const icons = {
@@ -567,8 +601,12 @@ function choosePaymentChannel(id){
     if(!channels[id]||channels[id].disabled)return;
     state.channel=id;
     state.channelSelected=true;
-    state.extraChannel = id === "vaderpayc2" ? state.extraChannel : "";
+    state.extraChannel =
+        state.method === "wallet" && (id === "vaderpayc1" || id === "eziepay")
+            ? state.extraChannel
+            : "";
     state.amount="";
+    if (state.method === "crypto") state.cryptoNetwork = "";
     if(state.method==="online")state.bank="";
     if(state.method==="wallet"||state.method==="qr")state.walletPayment="";
     const dropdown=$("#paymentChannelDropdown");
@@ -672,15 +710,36 @@ function chooseOnlineBank(bank) {
     validate();
 }
 function bankAccountDetails() {
-    return `<div class="bank-card"><h3>Receiving account for this order</h3><div class="account-line"><span>Receiving bank</span><b>${state.bank || "Please select a bank"}</b></div>${[
-        ["Bank account name", bankAccount.name],
-        ["Bank account number", bankAccount.number],
-    ]
-        .map(
-            (x) =>
-                `<div class="fixed-account-field"><span>${x[0]}</span><div><b>${x[1]}</b><button class="copy-icon"title="Copy ${x[0]}"aria-label="Copy ${x[0]}"onclick="copyText('${x[1]}')"><img src="assets/copy-icon.svg"alt=""></button></div></div>`
-        )
-        .join("")}</div>`;
+    const receivingBank = state.bank || "Please select a bank";
+
+    return `<div class="bank-card">
+        <h3>Pay To</h3>
+
+        <div class="fixed-account-field">
+            <span>Bank</span>
+            <div class="account-value-box">
+                <b>${receivingBank}</b>
+            </div>
+        </div>
+
+        ${[
+            ["Account Name", bankAccount.name],
+            ["Account Number", bankAccount.number],
+        ]
+            .map(
+                (x) =>
+                    `<div class="fixed-account-field">
+                        <span>${x[0]}</span>
+                        <div class="account-value-box">
+                            <b>${x[1]}</b>
+                            <button class="copy-icon" title="Copy ${x[0]}" aria-label="Copy ${x[0]}" onclick="copyText('${x[1]}')">
+                                <img src="assets/copy-icon.svg" alt="">
+                            </button>
+                        </div>
+                    </div>`
+            )
+            .join("")}
+    </div>`;
 }
 function setCryptoNetwork(network) {
     state.cryptoNetwork = network;
@@ -760,11 +819,33 @@ function field(label, content) {
 function amountBlock(c) {
     return `${field(`Amount <span class="required">*</span>`, `<div class="amount-wrap"><span class="currency">MYR</span><input id="amount"inputmode="decimal"placeholder="0"value="${state.amount}"oninput="setAmount(this.value)"></div><div id="amountHelp"class="input-help">Per transaction:${money(c.min)}–${money(c.max)}</div>`)}<div class="quick-amounts">${[20, 50, 100, 200, 500, 1000].map((v) => `<button onclick="quickAmount(${v})">MYR ${v}</button>`).join("")}</div>`;
 }
+function setPromoCode(value) {
+    state.promoCode = value;
+}
+
+function promoCodeBlock() {
+    return `${field(
+        "Promo Code",
+        `<div class="promo-code-wrap">
+            <input
+                id="promoCode"
+                class="promo-code-input"
+                type="text"
+                placeholder="Have an Exclusive Promo Code?"
+                value="${state.promoCode}"
+                oninput="setPromoCode(this.value)"
+                autocomplete="off"
+            >
+        </div>`
+    )}`;
+}
+
 function renderForm() {
     let c = channels[state.channel],
         specific = "";
     if (state.channel === "banktransfer")
-        specific = `${amountBlock(c)}<div class="form-row"><div>${field('Transfer Type <span class="required">*</span>', `<select class="form-control"><option>Internet Banking</option><option>ATM</option><option>CDM</option><option>SMS Banking</option></select>`)}</div><div>${field("Sender account name", `<input class="form-control"placeholder="Enter sender account name">`)}</div></div>${field("Transfer receipt (optional)", `<div class="upload-box">A receipt may help us process your request faster.<br>JPG,PNG,or PDF·maximum 10MB<br><label>Select file<input type="file"onchange="showToast('Transfer receipt selected')"></label></div>`)}<div class="notice" style="margin-top:18px"><b>!</b><span>Please pay only to the account shown on this order. Do not transfer to previous or other accounts.</span></div>`;
+        specific = `${amountBlock(c)}<div class="form-row">
+       <div>${field("Sender account name", `<input class="form-control"placeholder="Enter sender account name">`)}</div></div>${field("Transfer receipt (optional)", `<div class="upload-box"><div class="upload-info"><span>A receipt may help us process your request faster.</span><small>JPG, PNG, or PDF · Maximum 10MB</small></div><label>Select file<input type="file"onchange="showToast('Transfer receipt selected')"></label></div>`)}`;
    
     else {
         let warning =
@@ -778,13 +859,31 @@ function renderForm() {
             ? "Submit transfer request"
             : state.channel === "usdt"
               ? "Continue"
-              : state.method === "qr"
-                ? "Generate payment QR code"
-                : `Continue with ${c.name}`;
+              : `Continue with ${c.name}`;
     $("#dynamicForm").innerHTML =
-        `${specific}<button id="submitBtn" class="primary-button" onclick="submitDeposit()">${label}</button><div class="security-copy"><img src="assets/secure.svg" alt="Security"><span>Your payment details are encrypted. Never share your order details with anyone.</span></div>`;
+        `${specific}${promoCodeBlock()}<button id="submitBtn" class="primary-button" onclick="submitDeposit()">${label}</button>`;
     validate();
 }
+const paymentFormAlignmentStyle = document.createElement("style");
+paymentFormAlignmentStyle.textContent =
+    ".deposit-layout{align-items:start}.channel-area,.dynamic-form{padding-top:22px}#channelGrid,#paymentChannelSelection{margin:0}#depositPackageSelection{margin-top:28px}";
+document.head.appendChild(paymentFormAlignmentStyle);
+
+const terracoinQrStyle = document.createElement("style");
+terracoinQrStyle.textContent =
+    ".terracoin-qr-section{width:100%;box-sizing:border-box;padding:24px;display:flex;justify-content:center;align-items:center}.terracoin-qr-card{display:flex;justify-content:center;align-items:center}.terracoin-qr-image{width:min(180px,100%);height:auto;display:block;background:#fff;padding:8px;box-sizing:border-box}";
+document.head.appendChild(terracoinQrStyle);
+
+const packageAmountStyle = document.createElement("style");
+packageAmountStyle.textContent =
+    "#depositPackageSelection .deposit-bonus-card{display:flex;align-items:center;justify-content:space-between;gap:16px;text-align:left}#depositPackageSelection .deposit-bonus-radio{display:none!important}#depositPackageSelection .deposit-bonus-content{display:flex;flex:1;min-width:0;flex-direction:column}#depositPackageSelection .deposit-bonus-name{display:block}#depositPackageSelection .deposit-bonus-amount{margin-left:auto;white-space:nowrap;font-weight:700;font-size:16px;color:#f3ead0}";
+document.head.appendChild(packageAmountStyle);
+
+const promoCodeStyle = document.createElement("style");
+promoCodeStyle.textContent =
+    ".promo-code-wrap{width:100%;margin-bottom:18px}.promo-code-input{width:100%;height:48px;padding:0 16px;border:1px solid #3a4352;border-radius:10px;background:#252932;color:#75756c;font:inherit;font-size:12px;box-sizing:border-box;outline:none}.promo-code-input::placeholder{color:#b7bec9}.promo-code-input:focus{border-color:var(--color-primary);box-shadow:0 0 0 2px rgba(255,214,75,.12)}";
+document.head.appendChild(promoCodeStyle);
+
 const securityCopyStyle = document.createElement("style");
 securityCopyStyle.textContent =
     ".security-copy{display:flex;align-items:center;gap:8px}.security-copy img{width:16px;height:16px;object-fit:contain;flex-shrink:0}";
@@ -861,16 +960,18 @@ function validateDepositRequirements() {
         if (!state.bank) errors.push("Please choose a receiving bank.");
     }
 
-    // E-Wallet: Package + Payment Channel + Accepts Payment From + Amount
+    // E-Wallet: Package + Payment Channel + Amount
     if (state.method === "wallet") {
         if (!state.channelSelected || !state.channel) errors.push("Please select a payment channel.");
-        if (!state.walletPayment) errors.push("Please select Accepts Payment From.");
     }
 
-    // Crypto: Package + Payment Channel + Crypto Network + Amount
+    // Crypto: Package + Payment Channel + Amount.
+    // Only VADERPAY (C2) requires a crypto network selection.
     if (state.method === "crypto") {
         if (!state.channelSelected || !state.channel) errors.push("Please select a payment channel.");
-        if (!state.cryptoNetwork) errors.push("Please choose a crypto network.");
+        if (state.channel === "usdt" && !state.cryptoNetwork) {
+            errors.push("Please choose a crypto network.");
+        }
     }
 
     if (!amount || amount <= 0) {
