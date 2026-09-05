@@ -210,7 +210,8 @@ const packageAmounts = {
 };
 const bankTransferOptions = [
     "Maybank",
-    "Alliance"
+    "Alliance Bank",
+    "Public Bank"
 ];
 const bankAccount = { name: "JH AUTO MOBILE", number: "560102718204" };
 let ewalletChannelPage = 0;
@@ -647,6 +648,7 @@ function getBankIcon(bank) {
         "Hong Leong Bank": "assets/bank-HLB.svg",
         Maybank: "assets/bank-maybank.svg",
         "Public Bank Berhad": "assets/bank-Pb.svg",
+        "Public Bank": "assets/bank-Pb.svg",
         "RHB Bank": "assets/bank-RHB.svg",
         "CIMB Bank": "assets/bank-am.svg",
         "Bank Islam": "assets/bank-islam.svg",
@@ -778,46 +780,57 @@ function chooseOnlineBank(bank) {
 }
 function bankAccountDetails() {
     const receivingBank = state.bank || "Alliance";
+    const showQR = receivingBank === "Public Bank";
 
     return `<div class="bank-card">
         <h3>Pay To</h3>
 
-        <div class="fixed-account-field">
-            <span>From</span>
-            <input
-                class="account-value-box account-value-input"
-                type="text"
-                value="${state.senderAccountName || ""}"
-                placeholder="Full name"
-                oninput="state.senderAccountName=this.value"
-                autocomplete="off"
-            >
-        </div>
-
-        <div class="fixed-account-field">
-            <span>To</span>
-            <div class="account-value-box">
-                <b>${receivingBank}</b>
+        <div class="bank-payment-content">
+            ${showQR ? `
+            <div class="bank-payment-qr">
+                <img src="assets/QRcode.jpg" alt="Public Bank Payment QR Code">
             </div>
-        </div>
+            ` : ""}
 
-        <div class="fixed-account-field">
-            <span>Account Name</span>
-            <div class="account-value-box">
-                <b>${bankAccount.name}</b>
-                <button class="copy-icon" title="Copy Account Name" aria-label="Copy Account Name" onclick="copyText('${bankAccount.name}')">
-                    <img src="assets/copy-icon.svg" alt="">
-                </button>
-            </div>
-        </div>
+            <div class="bank-payment-details">
+                <div class="fixed-account-field">
+                    <span>From</span>
+                    <input
+                        class="account-value-box account-value-input"
+                        type="text"
+                        value="${state.senderAccountName || ""}"
+                        placeholder="Full name"
+                        oninput="state.senderAccountName=this.value"
+                        autocomplete="off"
+                    >
+                </div>
 
-        <div class="fixed-account-field">
-            <span>Account Number</span>
-            <div class="account-value-box">
-                <b>${bankAccount.number}</b>
-                <button class="copy-icon" title="Copy Account Number" aria-label="Copy Account Number" onclick="copyText('${bankAccount.number}')">
-                    <img src="assets/copy-icon.svg" alt="">
-                </button>
+                <div class="fixed-account-field">
+                    <span>To</span>
+                    <div class="account-value-box">
+                        <b>${receivingBank}</b>
+                    </div>
+                </div>
+
+                <div class="fixed-account-field">
+                    <span>Account Name</span>
+                    <div class="account-value-box">
+                        <b>${bankAccount.name}</b>
+                        <button class="copy-icon" title="Copy Account Name" aria-label="Copy Account Name" onclick="copyText('${bankAccount.name}')">
+                            <img src="assets/copy-icon.svg" alt="">
+                        </button>
+                    </div>
+                </div>
+
+                <div class="fixed-account-field">
+                    <span>Account Number</span>
+                    <div class="account-value-box">
+                        <b>${bankAccount.number}</b>
+                        <button class="copy-icon" title="Copy Account Number" aria-label="Copy Account Number" onclick="copyText('${bankAccount.number}')">
+                            <img src="assets/copy-icon.svg" alt="">
+                        </button>
+                    </div>
+                </div>
             </div>
         </div>
     </div>`;
@@ -853,11 +866,7 @@ function renderSummary() {
                     >
 
                         <img
-                            src="assets/${
-                                bank === "Maybank"
-                                    ? "maybank"
-                                    : "alliance"
-                }.svg"
+                            src="${getBankIcon(bank)}"
                             alt="${bank}"
                         >
 
