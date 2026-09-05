@@ -239,7 +239,7 @@
     }
 
     .fixed-account-field > div {
-   min-height: 40px;
+   min-height: 52px;
     padding: 0 7px 0 12px;
     display: flex;
     align-items: center;
@@ -269,3 +269,12 @@
     object-fit: contain;
     flex-shrink: 0;
 }
+
+
+/* Bank transfer: 3 receiving banks and QR beside Pay To details */
+.bank-option-tabs .bank-tile{flex:1;min-width:0}
+.bank-payment-content{display:flex;align-items:center;gap:18px;width:100%}
+.bank-payment-qr{flex:0 0 110px;display:flex;align-items:center;justify-content:center}
+.bank-payment-qr img{display:block;width:100px;height:100px;object-fit:contain;background:#fff;padding:6px;box-sizing:border-box}
+.bank-payment-details{flex:1;min-width:0}
+@media (max-width:620px){.bank-option-tabs .bank-tile{min-width:0}.bank-payment-content{gap:12px;align-items:flex-start}.bank-payment-qr{flex-basis:76px}.bank-payment-qr img{width:76px;height:76px;padding:4px}.bank-payment-details .fixed-account-field{grid-template-columns:78px minmax(0,1fr);gap:8px;padding:4px 0}.bank-payment-details .fixed-account-field>div{min-height:44px}.bank-payment-details .account-value-input{min-height:44px}}
