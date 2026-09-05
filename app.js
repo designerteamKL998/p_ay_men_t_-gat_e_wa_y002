@@ -788,7 +788,7 @@ function bankAccountDetails() {
                 class="account-value-box account-value-input"
                 type="text"
                 value="${state.senderAccountName || ""}"
-                placeholder="Enter account name"
+                placeholder="Full name"
                 oninput="state.senderAccountName=this.value"
                 autocomplete="off"
             >
