@@ -287,21 +287,34 @@ function movePackageBelowPaymentChannel() {
 
     if (!packageArea || !channelGrid) return;
 
-    // Keep the original desktop position.
-    channelGrid.insertAdjacentElement("afterend", packageArea);
+    // MOBILE ONLY
+    // Do not move Package to Payment Channel first,
+    // because that causes the flashing effect.
+    if (window.matchMedia("(max-width: 768px)").matches) {
 
-    // MOBILE ONLY:
-    // Move Select a Package after Choose a Bank after the bank section is rendered.
-    if (window.matchMedia("(max-width: 768px)").matches && bankArea) {
-        const movePackageAfterBank = () => {
-            if (bankArea.innerHTML.trim() !== "") {
-                bankArea.insertAdjacentElement("afterend", packageArea);
+        setTimeout(() => {
+            if (
+                bankArea &&
+                bankArea.innerHTML.trim() !== ""
+            ) {
+                bankArea.insertAdjacentElement(
+                    "afterend",
+                    packageArea
+                );
+            } else {
+                channelGrid.insertAdjacentElement(
+                    "afterend",
+                    packageArea
+                );
             }
-        };
+        }, 0);
 
-        // Run after the current render finishes.
-        setTimeout(movePackageAfterBank, 0);
+        return;
     }
+
+    // DESKTOP ONLY
+    // Keep original position.
+    channelGrid.insertAdjacentElement("afterend", packageArea);
 }
 
 function renderChannels() {
