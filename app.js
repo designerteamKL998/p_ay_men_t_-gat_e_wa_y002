@@ -283,11 +283,25 @@ function renderTabs() {
 function movePackageBelowPaymentChannel() {
     const packageArea = $("#packageArea");
     const channelGrid = $("#channelGrid");
+    const bankArea = $("#bankArea");
 
     if (!packageArea || !channelGrid) return;
 
-    // Move the Package section directly below the Payment Channel / Channel Grid.
+    // Keep the original desktop position.
     channelGrid.insertAdjacentElement("afterend", packageArea);
+
+    // MOBILE ONLY:
+    // Move Select a Package after Choose a Bank after the bank section is rendered.
+    if (window.matchMedia("(max-width: 768px)").matches && bankArea) {
+        const movePackageAfterBank = () => {
+            if (bankArea.innerHTML.trim() !== "") {
+                bankArea.insertAdjacentElement("afterend", packageArea);
+            }
+        };
+
+        // Run after the current render finishes.
+        setTimeout(movePackageAfterBank, 0);
+    }
 }
 
 function renderChannels() {
@@ -470,24 +484,23 @@ function renderChannels() {
                         <div class="terracoin-payment-details">
                             <div class="fixed-account-field terracoin-to-field">
                                 <span>To</span>
-                                <div class="account-value-box terracoin-to-box">
-                                    <input
-                                        id="terracoinAccountName"
-                                        class="terracoin-account-input"
-                                        type="text"
-                                        placeholder="Enter account name"
-                                        autocomplete="off"
-                                    >
-                                    <button
-                                        type="button"
-                                        class="copy-icon"
-                                        title="Copy"
-                                        aria-label="Copy"
-                                        onclick="copyText(document.getElementById('terracoinAccountName').value)"
-                                    >
-                                        <img src="assets/copy-icon.svg" alt="">
-                                    </button>
-                                </div>
+                         <div class="account-value-box terracoin-to-box">
+
+    <span class="terracoin-address-text">
+        TQ3U1Zz3XX5AqKHzbMZkjJ4UZpQfKHLN2v
+    </span>
+
+    <button
+        type="button"
+        class="copy-icon"
+        title="Copy"
+        aria-label="Copy"
+        onclick="copyText('TQ3U1Zz3XX5AqKHzbMZkjJ4UZpQfKHLN2v')"
+    >
+        <img src="assets/copy-icon.svg" alt="">
+    </button>
+
+</div>
                             </div>
 
                             <div class="terracoin-rate-row">
@@ -925,7 +938,7 @@ document.head.appendChild(paymentFormAlignmentStyle);
 
 const terracoinQrStyle = document.createElement("style");
 terracoinQrStyle.textContent =
-    ".terracoin-qr-section{width:100%;box-sizing:border-box;padding:18px 24px}.terracoin-payment-row{display:flex;align-items:center;gap:24px;width:100%}.terracoin-qr-card{display:flex;justify-content:center;align-items:center;flex:0 0 auto}.terracoin-qr-image{width:120px;height:120px;object-fit:contain;display:block;background:#fff;padding:6px;box-sizing:border-box}.terracoin-payment-details{flex:1;min-width:0}.terracoin-to-field{margin:0}.terracoin-to-box{display:flex!important;align-items:center;gap:8px;padding-right:10px}.terracoin-account-input{flex:1;min-width:0;border:1px solid #3a4352;border-radius:10px;background:#252932;color:#fff;font:inherit;font-weight:700;padding:12px 14px;box-sizing:border-box;outline:none}.terracoin-account-input::placeholder{color:#fff;font-weight:400;opacity:.7}.terracoin-rate-row{margin-top:12px;display:flex;align-items:center;gap:10px;color:#c5ccd6;font-size:13px}.terracoin-rate-row b{display:inline-block;color:#fff;padding:8px 12px;font-size:13px}@media(max-width:700px){.terracoin-qr-section{padding:16px}.terracoin-payment-row{gap:16px}.terracoin-qr-image{width:92px;height:92px}.terracoin-rate-row{flex-wrap:wrap}}";
+    ".terracoin-qr-section{width:100%;box-sizing:border-box;padding:18px 24px}.terracoin-payment-row{display:flex;align-items:center;gap:24px;width:100%}.terracoin-qr-card{display:flex;justify-content:center;align-items:center;flex:0 0 auto}.terracoin-qr-image{margin: 0 auto;width:120px;height:120px;object-fit:contain;display:block;background:#fff;padding:6px;box-sizing:border-box}.terracoin-payment-details{flex:1;min-width:0}.terracoin-to-field{margin:0}.terracoin-to-box{display:flex!important;align-items:center;gap:8px;padding-right:10px}.terracoin-account-input{flex:1;min-width:0;border:1px solid #3a4352;border-radius:10px;background:#252932;color:#fff;font:inherit;font-weight:700;padding:12px 14px;box-sizing:border-box;outline:none}.terracoin-account-input::placeholder{color:#fff;font-weight:400;opacity:.7}.terracoin-rate-row{margin-top:12px;display:flex;align-items:center;gap:10px;color:#c5ccd6;font-size:13px}.terracoin-rate-row b{display:inline-block;color:#fff;padding:8px 12px;font-size:13px}@media(max-width:700px){.terracoin-qr-section{padding:16px}.terracoin-payment-row{display:block;width:100%}.terracoin-qr-card{justify-content:flex-start;margin-bottom:16px}.terracoin-qr-image{width:92px;height:92px}.terracoin-payment-details{width:100%}.terracoin-to-box{width:100%;max-width:100%;min-width:0;display:flex!important;align-items:flex-start;padding-right:10px}.terracoin-account-input{flex:1;min-width:0;white-space:normal;overflow-wrap:anywhere;word-break:break-all}.terracoin-rate-row{flex-wrap:wrap}}";
 document.head.appendChild(terracoinQrStyle);
 
 const packageAmountStyle = document.createElement("style");
